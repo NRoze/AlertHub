@@ -1,7 +1,9 @@
 using AlertHub.Api.Functions;
+using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Moq;
 using StackExchange.Redis;
 
@@ -42,7 +44,9 @@ public class PikudPollerTests
         
         _cacheMock.Setup(c => c.TryAddAsync("alert1")).ReturnsAsync(true);
 
-        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _connectionMock.Object);
+        var optionsMock = new Mock<IOptions<RedisOptions>>();
+        optionsMock.SetupGet(o => o.Value).Returns(new RedisOptions());
+        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _connectionMock.Object, optionsMock.Object);
         var timerInfo = new TimerInfo();
 
         // Act

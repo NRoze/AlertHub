@@ -1,7 +1,9 @@
 using AlertHub.Api.Infrastructure;
 using AlertHub.Api.Logging;
+using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace AlertHub.Api.Functions;
@@ -11,12 +13,18 @@ public class PikudPoller
     private readonly IPikudPollerService _pikudPollerService;
     private readonly IAlertCache _alertCache;
     private readonly ISubscriber _subscriber;
+    private readonly RedisOptions _redisOptions;
 
-    public PikudPoller(IPikudPollerService pikudPollerService, IAlertCache alertCache, IConnectionMultiplexer multiplexer)
+    public PikudPoller(
+        IPikudPollerService pikudPollerService, 
+        IAlertCache alertCache, 
+        IConnectionMultiplexer multiplexer, 
+        IOptions<RedisOptions> redisOptions)
     {
         _pikudPollerService = pikudPollerService;
         _alertCache = alertCache;
         _subscriber = multiplexer.GetSubscriber();
+        _redisOptions = redisOptions.Value;
     }
 
     [Function("PikudPoller")]
@@ -34,10 +42,10 @@ public class PikudPoller
 
             foreach (var alert in alerts)
             {
-                if (await _alertCache.TryAddAsync(alert))
+                if (await _alertCache.TryAddAsync(alert, cancellationToken))
                 {
                     logger.NewAlert(alert);
-                    await _subscriber.PublishAsync(RedisConnection.AlertsChannel, alert);
+                    await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alert);
                 }
             }
         }

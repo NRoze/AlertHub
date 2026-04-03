@@ -1,6 +1,8 @@
 using AlertHub.Api.Infrastructure;
+using AlertHub.Api.Options;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Text;
 using System.Text.Json;
@@ -10,14 +12,16 @@ namespace AlertHub.Api.Functions;
 public class AlertsSSE
 {
     private readonly ISubscriber _subscriber;
+    private readonly RedisOptions _redisOptions;
 
-    public AlertsSSE(IConnectionMultiplexer multiplexer)
+    public AlertsSSE(IConnectionMultiplexer multiplexer, IOptions<RedisOptions> redisOptions)
     {
         _subscriber = multiplexer.GetSubscriber();
+        _redisOptions = redisOptions.Value;
     }
 
     [Function("AlertsSSE")]
-    public async Task<HttpResponseData> Run(HttpRequestData req)
+    public async Task<HttpResponseData> Run(HttpRequestData req, CancellationToken cancellationToken)
     {
         var response = req.CreateResponse();
 
@@ -26,16 +30,29 @@ public class AlertsSSE
 
         var client = req.Body;
 
-        await _subscriber.SubscribeAsync(RedisConnection.AlertsChannel, async (channel, message) =>
+        await _subscriber.SubscribeAsync(_redisOptions.AlertsChannel, async (channel, message) =>
         {
             var data = $"data: {JsonSerializer.Serialize(message)}\n\n";
             var bytes = Encoding.UTF8.GetBytes(data);
-            await response.Body.WriteAsync(bytes);
-            await response.Body.FlushAsync();
+            await response.Body.WriteAsync(bytes, cancellationToken);
+            await response.Body.FlushAsync(cancellationToken);
         });
 
-        // Keep the HTTP connection open
-        // Azure Functions will keep this function alive until the client disconnects
+        // Keep the HTTP connection open until the client disconnects
+        try
+        {
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            // Client connection closed
+        }
+        finally
+        {
+            // Stop listening to redis when connection drops
+            await _subscriber.UnsubscribeAsync(_redisOptions.AlertsChannel);
+        }
+
         return response;
     }
 }

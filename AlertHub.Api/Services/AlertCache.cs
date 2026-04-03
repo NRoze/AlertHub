@@ -14,8 +14,9 @@ public class AlertCache : IAlertCache
         _db = multiplexer.GetDatabase();
     }
 
-    public async Task<bool> TryAddAsync(string alert)
+    public async Task<bool> TryAddAsync(string alert, CancellationToken cancellationToken = default)
 {
+        cancellationToken.ThrowIfCancellationRequested();
         var added = await _db.SetAddAsync(CacheKey, alert);
 
         if (added)
@@ -26,9 +27,10 @@ public class AlertCache : IAlertCache
         return added;
     }
 
-    public async Task TryAddRange(IReadOnlyList<string> alerts)
+    public async Task TryAddRange(IReadOnlyList<string> alerts, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         foreach (var alert in alerts)
-            await TryAddAsync(alert);
+            await TryAddAsync(alert, cancellationToken);
     }
 }
