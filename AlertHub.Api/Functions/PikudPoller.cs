@@ -1,14 +1,14 @@
-using AlertHub.Api.Infrastructure;
 using AlertHub.Api.Logging;
 using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace AlertHub.Api.Functions;
 
-public class PikudPoller
+internal sealed class PikudPoller
 {
     private readonly IPikudPollerService _pikudPollerService;
     private readonly IAlertCache _alertCache;
@@ -34,6 +34,8 @@ public class PikudPoller
         CancellationToken cancellationToken)
     {
         var logger = context.GetLogger("PikudPoller");
+        
+        logger.LogScheduledExecution(timer);
 
         try
         {

@@ -1,8 +1,8 @@
-﻿using StackExchange.Redis;
+using StackExchange.Redis;
 
 namespace AlertHub.Api.Options;
 
-public class RedisOptions
+internal sealed class RedisOptions
 {
     public RedisChannel AlertsChannel { get; set; } = RedisChannel.Literal("alerts_channel");
 }

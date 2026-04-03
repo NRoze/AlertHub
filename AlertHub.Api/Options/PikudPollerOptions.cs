@@ -1,6 +1,6 @@
 namespace AlertHub.Api.Options;
 
-public class PikudPollerOptions
+internal sealed class PikudPollerOptions
 {
     public string PikudApiUrl { get; set; } = string.Empty;
 }

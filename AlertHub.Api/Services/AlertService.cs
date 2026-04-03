@@ -1,8 +1,8 @@
-﻿using AlertHub.Api.Models;
+using AlertHub.Api.Models;
 
 namespace AlertHub.Api.Services;
 
-public class AlertService : IAlertService
+internal sealed class AlertService : IAlertService
 {
     public async Task<bool> ProcessAlertAsync(AlertMessage alert)
     {

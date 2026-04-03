@@ -1,4 +1,3 @@
-using AlertHub.Api.Infrastructure;
 using AlertHub.Api.Options;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -9,7 +8,7 @@ using System.Text.Json;
 
 namespace AlertHub.Api.Functions;
 
-public class AlertsSSE
+internal sealed class AlertsSSE
 {
     private readonly ISubscriber _subscriber;
     private readonly RedisOptions _redisOptions;

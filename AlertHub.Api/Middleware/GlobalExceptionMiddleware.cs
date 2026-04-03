@@ -7,7 +7,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 
 namespace AlertHub.Api.Middleware;
 
-public class GlobalExceptionMiddleware : IFunctionsWorkerMiddleware
+internal sealed class GlobalExceptionMiddleware : IFunctionsWorkerMiddleware
 {
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {

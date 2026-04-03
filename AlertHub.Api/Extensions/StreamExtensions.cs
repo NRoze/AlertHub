@@ -1,6 +1,6 @@
-﻿namespace AlertHub.Api.Extensions;
+namespace AlertHub.Api.Extensions;
 
-static public class StreamExtensions
+internal static class StreamExtensions
 {
     extension(Stream stream)
     {

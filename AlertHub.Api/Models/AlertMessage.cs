@@ -1,6 +1,6 @@
-﻿namespace AlertHub.Api.Models;
+namespace AlertHub.Api.Models;
 
-public class AlertMessage
+public sealed class AlertMessage
 {
     public string Id { get; set; } = "";
     public string Title { get; set; } = "";

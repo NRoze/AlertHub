@@ -1,11 +1,11 @@
-﻿using AlertHub.Api.Extensions;
+using AlertHub.Api.Extensions;
 using AlertHub.Api.Options;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace AlertHub.Api.Services;
 
-public sealed class PikudPollerService : IPikudPollerService
+internal sealed class PikudPollerService : IPikudPollerService
 {
     private const string _dataPropertyName = "data";
     private readonly IHttpClientFactory _httpClientFactory;
