@@ -1,8 +1,7 @@
-﻿using AlertHub.Api.Services;
-using Microsoft.AspNetCore.SignalR;
+﻿using AlertHub.Api.Infrastructure;
+using AlertHub.Api.Logging;
+using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.SignalR.Management;
-using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace AlertHub.Api.Functions;
@@ -37,16 +36,14 @@ public class PikudPoller
             {
                 if (await _alertCache.TryAddAsync(alert))
                 {
-                    if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation("New alert: {Alert}", alert);
+                    logger.NewAlert(alert);
                     await _subscriber.PublishAsync(RedisConnection.AlertsChannel, alert);
                 }
             }
         }
         catch (Exception ex)
         {
-            if (logger.IsEnabled(LogLevel.Error))
-                logger.LogError("Error polling Pikud HaOref API: {Message}", ex.Message);
+            logger.PollingError(ex.Message);
             throw;
         }
     }

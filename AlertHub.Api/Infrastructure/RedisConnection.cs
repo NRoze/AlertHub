@@ -1,5 +1,7 @@
 ﻿using StackExchange.Redis;
 
+namespace AlertHub.Api.Infrastructure;
+
 public static class RedisConnection
 {
     private static readonly Lazy<ConnectionMultiplexer> LazyConnection = new(() =>

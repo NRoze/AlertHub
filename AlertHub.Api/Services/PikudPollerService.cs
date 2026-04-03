@@ -34,7 +34,7 @@ public sealed class PikudPollerService : IPikudPollerService
 
         if (!json.TryGetProperty(_dataPropertyName, out var data)) return [];
 
-        return data.EnumerateArray().Select(a => a.GetString() ?? default!).ToList();
+        return [.. data.EnumerateArray().Select(a => a.GetString() ?? default!)];
 
     }
 }

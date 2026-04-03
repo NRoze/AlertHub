@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using AlertHub.Api.Infrastructure;
+using StackExchange.Redis;
 using System.Collections.Concurrent;
 
 namespace AlertHub.Api.Services;

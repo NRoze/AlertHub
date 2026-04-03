@@ -1,8 +1,11 @@
-﻿using Microsoft.Azure.Functions.Worker;
+﻿using AlertHub.Api.Infrastructure;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using StackExchange.Redis;
 using System.Text;
 using System.Text.Json;
+
+namespace AlertHub.Api.Functions;
 
 public class AlertsSSE
 {

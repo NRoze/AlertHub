@@ -3,6 +3,7 @@ using AlertHub.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using AlertHub.Api.Options;
+using AlertHub.Api.Middleware;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
