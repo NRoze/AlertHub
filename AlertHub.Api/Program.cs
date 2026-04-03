@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using AlertHub.Api.Options;
 using AlertHub.Api.Middleware;
+using StackExchange.Redis;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
@@ -17,13 +18,25 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
-            StackExchange.Redis.ConnectionMultiplexer.Connect(Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "localhost:6379"));
+        services.AddSingleton<IConnectionMultiplexer>(sp => 
+            ConnectionMultiplexer.Connect(
+                Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "localhost:6379"));
 
         services.AddHttpClient();
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));
-        services.AddScoped<IPikudPollerService, PikudPollerService>();
+        
+        var useSimulatedAlerts = context.Configuration.GetSection("PikudPoller")
+                                    .Get<PikudPollerOptions>()?.UseSimulatedAlerts == true;
+        if (useSimulatedAlerts)
+        {
+            services.AddScoped<IPikudPollerService, SimulatedPikudPollerService>();
+        }
+        else
+        {
+            services.AddScoped<IPikudPollerService, PikudPollerService>();
+        }
+
         services.AddScoped<IAlertCache, AlertCache>();
     })
     .Build();

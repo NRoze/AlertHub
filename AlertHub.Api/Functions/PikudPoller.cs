@@ -1,10 +1,12 @@
 using AlertHub.Api.Logging;
+using AlertHub.Api.Models;
 using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using System.Text.Json;
 
 namespace AlertHub.Api.Functions;
 
@@ -44,10 +46,12 @@ internal sealed class PikudPoller
 
             foreach (var alert in alerts)
             {
-                if (await _alertCache.TryAddAsync(alert, cancellationToken))
+                var alertDto = JsonSerializer.Deserialize<AlertMessageDto>(alert)!;
+
+                if (await _alertCache.TryAddAsync(alertDto.Id, alert, cancellationToken))
                 {
-                    logger.NewAlert(alert);
-                    await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alert);
+                    logger.NewAlert(alertDto);
+                    await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alertDto.Id);
                 }
             }
         }
