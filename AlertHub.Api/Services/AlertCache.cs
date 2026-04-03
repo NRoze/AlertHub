@@ -1,4 +1,4 @@
-﻿using AlertHub.Api.Infrastructure;
+using AlertHub.Api.Infrastructure;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
 
@@ -9,13 +9,13 @@ public class AlertCache : IAlertCache
     private readonly IDatabase _db;
     private const string CacheKey = "recent_alerts";
 
-    public AlertCache()
+    public AlertCache(IConnectionMultiplexer multiplexer)
     {
-        _db = RedisConnection.Connection.GetDatabase();
+        _db = multiplexer.GetDatabase();
     }
 
     public async Task<bool> TryAddAsync(string alert)
-    {
+{
         var added = await _db.SetAddAsync(CacheKey, alert);
 
         if (added)

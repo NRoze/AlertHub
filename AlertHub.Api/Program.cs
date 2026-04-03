@@ -16,6 +16,9 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
+        services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
+            StackExchange.Redis.ConnectionMultiplexer.Connect(Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "localhost:6379"));
+
         services.AddHttpClient();
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));

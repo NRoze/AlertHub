@@ -1,4 +1,4 @@
-﻿using AlertHub.Api.Infrastructure;
+using AlertHub.Api.Infrastructure;
 using AlertHub.Api.Logging;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
@@ -12,11 +12,11 @@ public class PikudPoller
     private readonly IAlertCache _alertCache;
     private readonly ISubscriber _subscriber;
 
-    public PikudPoller(IPikudPollerService pikudPollerService, IAlertCache alertCache)
+    public PikudPoller(IPikudPollerService pikudPollerService, IAlertCache alertCache, IConnectionMultiplexer multiplexer)
     {
         _pikudPollerService = pikudPollerService;
         _alertCache = alertCache;
-        _subscriber = RedisConnection.Connection.GetSubscriber();
+        _subscriber = multiplexer.GetSubscriber();
     }
 
     [Function("PikudPoller")]

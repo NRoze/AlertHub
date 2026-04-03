@@ -1,0 +1,76 @@
+using AlertHub.Api.Services;
+using Moq;
+using StackExchange.Redis;
+
+namespace AlertHub.Tests.Services;
+
+public class AlertCacheTests
+{
+    private readonly Mock<IConnectionMultiplexer> _connectionMock;
+    private readonly Mock<IDatabase> _dbMock;
+    private readonly AlertCache _sut;
+
+    public AlertCacheTests()
+    {
+        _connectionMock = new Mock<IConnectionMultiplexer>();
+        _dbMock = new Mock<IDatabase>();
+
+        _connectionMock.Setup(c => c.GetDatabase(It.IsAny<int>(), It.IsAny<object>())).Returns(_dbMock.Object);
+
+        _sut = new AlertCache(_connectionMock.Object);
+    }
+
+    [Fact]
+    public async Task TryAddAsync_ShouldSetAddAndExpire_WhenAlertIsNew()
+    {
+        // Arrange
+        var alert = "test-alert";
+        var cacheKey = "recent_alerts";
+        _dbMock.Setup(db => db.SetAddAsync(cacheKey, alert, CommandFlags.None))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _sut.TryAddAsync(alert);
+
+        // Assert
+        Assert.True(result);
+        _dbMock.Verify(db => db.SetAddAsync(cacheKey, alert, CommandFlags.None), Times.Once);
+        _dbMock.Verify(db => db.KeyExpireAsync(cacheKey, TimeSpan.FromSeconds(30), ExpireWhen.Always, CommandFlags.None), Times.Once);
+    }
+
+    [Fact]
+    public async Task TryAddAsync_ShouldNotExpire_WhenAlertExists()
+    {
+        // Arrange
+        var alert = "test-alert";
+        var cacheKey = "recent_alerts";
+        _dbMock.Setup(db => db.SetAddAsync(cacheKey, alert, CommandFlags.None))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _sut.TryAddAsync(alert);
+
+        // Assert
+        Assert.False(result);
+        _dbMock.Verify(db => db.SetAddAsync(cacheKey, alert, CommandFlags.None), Times.Once);
+        _dbMock.Verify(db => db.KeyExpireAsync(It.IsAny<RedisKey>(), It.IsAny<TimeSpan>(), It.IsAny<ExpireWhen>(), It.IsAny<CommandFlags>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task TryAddRange_ShouldProcessAllItems()
+    {
+        // Arrange
+        var alerts = new List<string> { "alert1", "alert2" };
+        var cacheKey = "recent_alerts";
+        _dbMock.Setup(db => db.SetAddAsync(cacheKey, It.IsAny<RedisValue>(), CommandFlags.None))
+            .ReturnsAsync(true);
+
+        // Act
+        await _sut.TryAddRange(alerts);
+
+        // Assert
+        _dbMock.Verify(db => db.SetAddAsync(cacheKey, "alert1", CommandFlags.None), Times.Once);
+        _dbMock.Verify(db => db.SetAddAsync(cacheKey, "alert2", CommandFlags.None), Times.Once);
+        _dbMock.Verify(db => db.KeyExpireAsync(cacheKey, TimeSpan.FromSeconds(30), ExpireWhen.Always, CommandFlags.None), Times.Exactly(2));
+    }
+}

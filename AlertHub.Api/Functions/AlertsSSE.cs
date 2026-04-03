@@ -1,4 +1,4 @@
-﻿using AlertHub.Api.Infrastructure;
+using AlertHub.Api.Infrastructure;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using StackExchange.Redis;
@@ -11,9 +11,9 @@ public class AlertsSSE
 {
     private readonly ISubscriber _subscriber;
 
-    public AlertsSSE()
+    public AlertsSSE(IConnectionMultiplexer multiplexer)
     {
-        _subscriber = RedisConnection.Connection.GetSubscriber();
+        _subscriber = multiplexer.GetSubscriber();
     }
 
     [Function("AlertsSSE")]

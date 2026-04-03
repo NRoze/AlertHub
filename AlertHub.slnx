@@ -1,7 +1,12 @@
 <Solution>
-  <Folder Name="/AlertHub.Tests/" />
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path=".github/workflows/ci.yml" />
   </Folder>
-  <Project Path="AlertHub.Api/AlertHub.Api.csproj" />
+  <Folder Name="/src/">
+    <Project Path="AlertHub.Api/AlertHub.Api.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="AlertHub.Tests/AlertHub.Tests.csproj" />
+  </Folder>
 </Solution>
