@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/AlertHub.Tests/" />
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="AlertHub.Api/AlertHub.Api.csproj" />
+</Solution>
