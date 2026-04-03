@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿namespace AlertHub.Api.Extensions;
 
-namespace AlertHub.Api.Extensions
+static public class StreamExtensions
 {
-    static public class StreamExtensions
+    extension(Stream stream)
     {
-        extension(Stream stream)
+        public bool IsEmpty(int emptyLength)
         {
-            public bool IsEmpty(int emptyLength)
-            {
-                return (stream is null || stream.Length <= emptyLength);
-            }
+            return (stream is null || stream.Length <= emptyLength);
         }
     }
 }
