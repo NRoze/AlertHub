@@ -20,7 +20,9 @@ internal sealed class AlertsSSE
     }
 
     [Function("AlertsSSE")]
-    public async Task<HttpResponseData> Run(HttpRequestData req, CancellationToken cancellationToken)
+    public async Task<HttpResponseData> Run(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req, 
+        CancellationToken cancellationToken)
     {
         var response = req.CreateResponse();
 

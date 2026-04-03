@@ -29,7 +29,7 @@ internal sealed class PikudPoller
 
     [Function("PikudPoller")]
     public async Task Run(
-        [TimerTrigger("*/5 * * * * *")] TimerInfo timer, 
+        [TimerTrigger("%POLL_INTERVAL_CRON%")] TimerInfo timer, 
         FunctionContext context,
         CancellationToken cancellationToken)
     {
