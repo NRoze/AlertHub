@@ -1,4 +1,6 @@
 using AlertHub.Api.Models;
+using AlertHub.Api.Options;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace AlertHub.Api.Services;
@@ -6,13 +8,15 @@ namespace AlertHub.Api.Services;
 internal sealed class AlertCache : IAlertCache
 {
     private readonly IDatabase _db;
-    private const string CacheKey = "recent_alerts";
-    public static readonly TimeSpan Expiry = TimeSpan.FromSeconds(30);
+    private readonly RedisOptions _options;
+
     private static RedisValue AlertValue(string alert) => new(alert);
     private static RedisKey AlertKey(string alertId) => new($"alert:{alertId}");
-    public AlertCache(IConnectionMultiplexer multiplexer)
+
+    public AlertCache(IConnectionMultiplexer multiplexer, IOptions<RedisOptions> options)
     {
         _db = multiplexer.GetDatabase();
+        _options = options.Value;
     }
     public async Task<bool> TryAddAsync(string alertId, string alertRaw, CancellationToken ct = default)
     {
@@ -20,8 +24,8 @@ internal sealed class AlertCache : IAlertCache
 
         return await _db.StringSetAsync(
             AlertKey(alertId),
-            AlertValue(alertRaw),
-            expiry: Expiry,
+            AlertValue("1"),
+            expiry: _options.AlertExpiry,
             when: When.NotExists
         );
     }

@@ -1,5 +1,7 @@
 using AlertHub.Api.Models;
+using AlertHub.Api.Options;
 using AlertHub.Api.Services;
+using Microsoft.Extensions.Options;
 using Moq;
 using StackExchange.Redis;
 
@@ -13,12 +15,14 @@ public class AlertCacheTests
 
     public AlertCacheTests()
     {
+        var options = Options.Create(new RedisOptions());
+
         _connectionMock = new Mock<IConnectionMultiplexer>();
         _dbMock = new Mock<IDatabase>();
 
         _connectionMock.Setup(c => c.GetDatabase(It.IsAny<int>(), It.IsAny<object>())).Returns(_dbMock.Object);
 
-        _sut = new AlertCache(_connectionMock.Object);
+        _sut = new AlertCache(_connectionMock.Object, options);
     }
 
 [Fact]

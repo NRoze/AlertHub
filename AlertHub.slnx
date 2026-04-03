@@ -5,6 +5,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="AlertHub.Api/AlertHub.Api.csproj" />
+    <Project Path="AlertHub.WebApi/AlertHub.WebApi.csproj" Id="2e31aea4-d260-47f1-8a15-96334cc57f6b" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="AlertHub.Tests/AlertHub.Tests.csproj" />

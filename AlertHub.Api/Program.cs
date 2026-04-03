@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using AlertHub.Api.Options;
 using AlertHub.Api.Middleware;
 using StackExchange.Redis;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
@@ -18,9 +20,12 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
+        var r = context.Configuration["Redis:ConnectionString"];
+        
         services.AddSingleton<IConnectionMultiplexer>(sp => 
             ConnectionMultiplexer.Connect(
-                Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "localhost:6379"));
+                Environment.GetEnvironmentVariable("REDIS_CONNECTION") ??
+                context.Configuration["Redis:ConnectionString"]!));
 
         services.AddHttpClient();
         services.Configure<PikudPollerOptions>(

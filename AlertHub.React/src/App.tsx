@@ -1,8 +1,17 @@
+import { useAlertsSSE } from "./hooks/useAlertsSSE";
+
 function App() {
+  const alerts = useAlertsSSE();
+
   return (
-    <div>
+    <div style={{ padding: "2rem" }}>
       <h1>AlertHub 🚨</h1>
-      <p>Your React + TypeScript app is ready.</p>
+      <p>Listening for alerts...</p>
+      <ul>
+        {alerts?.map((alert, index) => (
+          <li key={index}>{alert}</li>
+        ))}
+      </ul>
     </div>
   );
 }

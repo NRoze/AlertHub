@@ -37,7 +37,7 @@ internal sealed class PikudPoller
     {
         var logger = context.GetLogger("PikudPoller");
         
-        logger.LogScheduledExecution(timer);
+        //logger.LogScheduledExecution(timer);
 
         try
         {
@@ -51,7 +51,7 @@ internal sealed class PikudPoller
                 if (await _alertCache.TryAddAsync(alertDto.Id, alert, cancellationToken))
                 {
                     logger.NewAlert(alertDto);
-                    await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alertDto.Id);
+                    await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alert);
                 }
             }
         }
