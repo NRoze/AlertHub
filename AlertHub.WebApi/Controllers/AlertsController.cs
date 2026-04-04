@@ -11,13 +11,16 @@ namespace AlertHub.WebApi.Controllers;
 public class AlertsController : ControllerBase
 {
     private readonly IConnectionMultiplexer _redis;
+    private readonly ILogger<AlertsController> _logger;
     private readonly RedisOptions _redisOptions;
 
     public AlertsController(
         IConnectionMultiplexer multiplexer, 
-        IOptions<RedisOptions> redisOptions)
+        IOptions<RedisOptions> redisOptions,
+        ILogger<AlertsController> logger)
     {
         _redis = multiplexer;
+        _logger = logger;
         _redisOptions = redisOptions.Value;
     }
 
@@ -53,6 +56,7 @@ public class AlertsController : ControllerBase
     { 
             if (message.HasValue)
             {
+                _logger.LogInformation("Message received on channel {Channel}: {Message}", channel, message);
                 string jsonString = JsonSerializer.Serialize(message.ToString()); 
                 var data = $"data: {jsonString}\n\n";
 
@@ -60,8 +64,12 @@ public class AlertsController : ControllerBase
                 {
                     await Response.WriteAsync(data, cancellationToken);
                     await Response.Body.FlushAsync(cancellationToken);
-                }
-                catch { } // Client disconnected
+                    _logger.LogInformation("Message sent to client: {Data}", data);
             }
+            catch 
+            {
+                    _logger.LogInformation("Client disconnected while sending message: {Data}", data);
+            }
+        }
     }
 }
