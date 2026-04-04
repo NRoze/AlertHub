@@ -5,9 +5,6 @@ using Microsoft.Extensions.Configuration;
 using AlertHub.Api.Options;
 using AlertHub.Api.Middleware;
 using StackExchange.Redis;
-using System.Diagnostics;
-using Microsoft.Extensions.Logging;
-using System.Threading;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
@@ -18,6 +15,7 @@ var host = new HostBuilder()
     {
         config.SetBasePath(context.HostingEnvironment.ContentRootPath);
         config.AddJsonFile("appsettings.function.json", optional: true, reloadOnChange: true);
+        config.AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
     {
