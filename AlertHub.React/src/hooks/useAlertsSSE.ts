@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { AlertMessage } from "../types/AlertMessage";
 
 export function useAlertsSSE() {
   const [alerts, setAlerts] = useState<string[]>([]); // ✅ starts as empty array
@@ -8,13 +9,27 @@ export function useAlertsSSE() {
     const url = "https://localhost:7154/api/alerts/sse";
     const eventSource = new EventSource(url);
 
-    eventSource.onmessage = (event) => {
-    console.log("Got SSE message:", event.data);
-      setAlerts((prev) => [...prev, JSON.parse(event.data)]);
+   eventSource.onmessage = (event) => {
+  try {
+        let parsed = JSON.parse(event.data);
+        
+        if (typeof parsed === 'string') {
+            parsed = JSON.parse(parsed);
+        }
+        
+        const message: AlertMessage = parsed;
+        
+        if (message && typeof message.title === 'string') {
+            setAlerts((prev) => [...prev, message.title]);
+        } else {
+            console.warn("Title is missing or invalid:", message);
+        }
+    } catch (error) {
+        console.error("Parse error:", error);
+    }
     };
 
     eventSource.onerror = (error) => {
-        console.log("SSE error event:", error);
       console.error("SSE error:", error);
       eventSource.close();
     };
