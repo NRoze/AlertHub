@@ -56,7 +56,7 @@ public class AlertsController : ControllerBase
     { 
             if (message.HasValue)
             {
-                _logger.LogInformation("Message received on channel {Channel}: {Message}", channel, message);
+                _logger.LogInformation("Message received on #{Channel}", channel);
                 string jsonString = JsonSerializer.Serialize(message.ToString()); 
                 var data = $"data: {jsonString}\n\n";
 
@@ -64,11 +64,10 @@ public class AlertsController : ControllerBase
                 {
                     await Response.WriteAsync(data, cancellationToken);
                     await Response.Body.FlushAsync(cancellationToken);
-                    _logger.LogInformation("Message sent to client: {Data}", data);
             }
             catch 
             {
-                    _logger.LogInformation("Client disconnected while sending message: {Data}", data);
+                    _logger.LogInformation("Client disconnected from #{Channel}", channel);
             }
         }
     }
