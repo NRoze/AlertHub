@@ -42,7 +42,7 @@ public class PikudPollerTests
         _serviceMock.Setup(s => s.GetAlertsAsJson(It.IsAny<CancellationToken>()))
             .ReturnsAsync(alerts);
         
-        _cacheMock.Setup(c => c.TryAddAsync("1", "{\"id\":\"1\"}", It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _cacheMock.Setup(c => c.TryAddAsync("1", It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         var options = Options.Create(new RedisOptions());
         var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _connectionMock.Object, options);
@@ -50,10 +50,10 @@ public class PikudPollerTests
 
         // Act
         await poller.Run(timerInfo, _contextMock.Object, CancellationToken.None);
-
+        
         // Assert
         _serviceMock.Verify(s => s.GetAlertsAsJson(It.IsAny<CancellationToken>()), Times.Once);
-        _cacheMock.Verify(c => c.TryAddAsync("1", "{\"id\":\"1\"}", It.IsAny<CancellationToken>()), Times.Once);
-        _subscriberMock.Verify(s => s.PublishAsync(It.IsAny<RedisChannel>(), "1", It.IsAny<CommandFlags>()), Times.Once);
+        _cacheMock.Verify(c => c.TryAddAsync("1",  It.IsAny<CancellationToken>()), Times.Once);
+        _subscriberMock.Verify(s => s.PublishAsync(It.IsAny<RedisChannel>(), "{\"id\":\"1\"}", It.IsAny<CommandFlags>()), Times.Once);
     }
 }

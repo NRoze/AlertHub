@@ -10,7 +10,7 @@ internal sealed class AlertCache : IAlertCache
     private readonly IDatabase _db;
     private readonly RedisOptions _options;
 
-    private static RedisValue AlertValue(string alert) => new(alert);
+    private static readonly RedisValue AlertValue= new("1");
     private static RedisKey AlertKey(string alertId) => new($"alert:{alertId}");
 
     public AlertCache(IConnectionMultiplexer multiplexer, IOptions<RedisOptions> options)
@@ -18,13 +18,13 @@ internal sealed class AlertCache : IAlertCache
         _db = multiplexer.GetDatabase();
         _options = options.Value;
     }
-    public async Task<bool> TryAddAsync(string alertId, string alertRaw, CancellationToken ct = default)
+    public async Task<bool> TryAddAsync(string alertId, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
 
         return await _db.StringSetAsync(
             AlertKey(alertId),
-            AlertValue("1"),
+            AlertValue,
             expiry: _options.AlertExpiry,
             when: When.NotExists
         );

@@ -48,7 +48,7 @@ internal sealed class PikudPoller
             {
                 var alertDto = JsonSerializer.Deserialize<AlertMessageDto>(alert)!;
 
-                if (await _alertCache.TryAddAsync(alertDto.Id, alert, cancellationToken))
+                if (await _alertCache.TryAddAsync(alertDto.Id, cancellationToken))
                 {
                     logger.NewAlert(alertDto);
                     await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alert);

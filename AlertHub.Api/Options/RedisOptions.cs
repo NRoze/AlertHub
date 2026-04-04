@@ -4,6 +4,6 @@ namespace AlertHub.Api.Options;
 
 public sealed class RedisOptions
 {
-    public TimeSpan AlertExpiry = TimeSpan.FromSeconds(6);
+    public TimeSpan AlertExpiry { get; set; } = TimeSpan.FromSeconds(30);
     public RedisChannel AlertsChannel { get; set; } = RedisChannel.Literal("alerts_channel");
 }

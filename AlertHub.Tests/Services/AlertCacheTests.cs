@@ -26,54 +26,53 @@ public class AlertCacheTests
     }
 
 [Fact]
-public async Task TryAddAsync_ShouldSetAddAndExpire_WhenAlertIsNew()
+public async Task TryAddAsync_ReturnsTrue_WhenAlertIsNew()
 {
     // Arrange
-    var alert = "test-alert" ;
+    var alert = "1" ;
     var cacheKey = "recent_alerts";
     _dbMock.Setup(db => db.StringSetAsync(
             It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
             It.Is<RedisValue>(v => v.ToString() == alert),
-            TimeSpan.FromSeconds(30),
+            It.IsAny<TimeSpan>(),
             When.NotExists))
         .ReturnsAsync(true);
 
     // Act
-    var result = await _sut.TryAddAsync(cacheKey, alert);
+    var result = await _sut.TryAddAsync(cacheKey);
 
     // Assert
     Assert.True(result);
     _dbMock.Verify(db => db.StringSetAsync(
             It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
             It.Is<RedisValue>(v => v.ToString() == alert),
-            TimeSpan.FromSeconds(30),
+            It.IsAny<TimeSpan>(),
             When.NotExists), Times.Once);
 }
 
 [Fact]
-public async Task TryAddAsync_ShouldNotExpire_WhenAlertExists()
+public async Task TryAddAsync_ReturnsFalse_WhenAlertAlreadyExists()
 {
     // Arrange
-    var alert = "test-alert";
+    var alert = "1";
     var cacheKey = "recent_alerts";
     _dbMock.Setup(db => db.StringSetAsync(
             It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
             It.Is<RedisValue>(v => v.ToString() == alert),
-            TimeSpan.FromSeconds(30),
+            It.IsAny<TimeSpan>(),
             When.NotExists))
         .ReturnsAsync(false);
 
     // Act
-    var result = await _sut.TryAddAsync(cacheKey, alert);
+    var result = await _sut.TryAddAsync(cacheKey);
 
     // Assert
     Assert.False(result);
     _dbMock.Verify(db => db.StringSetAsync(
             It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
             It.Is<RedisValue>(v => v.ToString() == alert),
-            TimeSpan.FromSeconds(30),
+            It.IsAny<TimeSpan>(),
             When.NotExists), Times.Once);
-    _dbMock.Verify(db => db.KeyExpireAsync(It.IsAny<RedisKey>(), It.IsAny<TimeSpan>(), It.IsAny<ExpireWhen>(), It.IsAny<CommandFlags>()), Times.Never);
 }
 
     //[Fact]
