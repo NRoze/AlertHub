@@ -21,15 +21,13 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddSingleton<IConnectionMultiplexer>(sp => 
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
-            var connString = Environment.GetEnvironmentVariable("REDIS_CONNECTION") ??
-                context.Configuration["Redis:ConnectionString"]!;
+            var connString = context.Configuration["Redis:ConnectionString"];
 
-            var options = ConfigurationOptions.Parse(connString);
+            var options = ConfigurationOptions.Parse(connString!);
             options.AbortOnConnectFail = false;
-            
-            // Helpful for Azure issues: ensure thread pool has enough minimum capacity to burst
+
             ThreadPool.SetMinThreads(200, 200);
 
             return ConnectionMultiplexer.Connect(options);
