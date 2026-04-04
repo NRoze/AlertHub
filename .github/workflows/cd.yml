@@ -67,6 +67,13 @@ jobs:
             --name alert-hub-webapi \
             --src WebApi.zip
 
+      - name: Set WebApi startup command
+        run: |
+          az webapp config set \
+            --resource-group alert-hub-rg \
+            --name alert-hub-webapi \
+            --startup-file "dotnet AlertHub.WebApi.dll"
+
       # ----- SSE Endpoint Verification (optional) -----
       # - name: Verify SSE Endpoint
       #   run: |
