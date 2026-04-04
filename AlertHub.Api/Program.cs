@@ -7,6 +7,7 @@ using AlertHub.Api.Middleware;
 using StackExchange.Redis;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
@@ -20,12 +21,19 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
-        var r = context.Configuration["Redis:ConnectionString"];
-        
         services.AddSingleton<IConnectionMultiplexer>(sp => 
-            ConnectionMultiplexer.Connect(
-                Environment.GetEnvironmentVariable("REDIS_CONNECTION") ??
-                context.Configuration["Redis:ConnectionString"]!));
+        {
+            var connString = Environment.GetEnvironmentVariable("REDIS_CONNECTION") ??
+                context.Configuration["Redis:ConnectionString"]!;
+
+            var options = ConfigurationOptions.Parse(connString);
+            options.AbortOnConnectFail = false;
+            
+            // Helpful for Azure issues: ensure thread pool has enough minimum capacity to burst
+            ThreadPool.SetMinThreads(200, 200);
+
+            return ConnectionMultiplexer.Connect(options);
+        });
 
         services.AddHttpClient();
         services.Configure<PikudPollerOptions>(

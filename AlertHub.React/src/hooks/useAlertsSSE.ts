@@ -6,11 +6,12 @@ export function useAlertsSSE() {
 
   useEffect(() => {
     console.log("Hook initialized");
-    const url = "https://localhost:7154/api/alerts/sse";
+    //const url = "https://localhost:7154/api/alerts/sse";
+    const url = "https://alert-hub-webapi-hufjcrbcfgd3engk.israelcentral-01.azurewebsites.net/api/alerts/sse";
     const eventSource = new EventSource(url);
 
    eventSource.onmessage = (event) => {
-  try {
+      try {
         let parsed = JSON.parse(event.data);
         
         if (typeof parsed === 'string') {
@@ -24,9 +25,9 @@ export function useAlertsSSE() {
         } else {
             console.warn("Title is missing or invalid:", message);
         }
-    } catch (error) {
-        console.error("Parse error:", error);
-    }
+      } catch (error) {
+          console.error("Parse error:", error);
+      }
     };
 
     eventSource.onerror = (error) => {
