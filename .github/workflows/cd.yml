@@ -10,37 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
+      # 1️⃣ Checkout repository
       - uses: actions/checkout@v3
 
-      # 2. Setup .NET 10
+      # 2️⃣ Setup .NET 10
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '10.0.x'
 
-      # ----- Function App Deployment -----
-      - name: Publish Function App
-        run: dotnet publish AlertHub.Api -c Release -o ./AlertHub.Api/publish
-
-      - name: Deploy Function App
-        uses: Azure/functions-action@v1
-        with:
-          app-name: alert-hub-api
-          package: ./AlertHub.Api/publish
-          publish-profile: ${{ secrets.FUNCTIONAPP_PUBLISH_PROFILE }}
-
-      # ----- WebApi Deployment (Linux ZIP) -----
-      - name: Publish WebApi
-        run: dotnet publish AlertHub.WebApi -c Release -o ./AlertHub.WebApi/publish
-
-      - name: Zip WebApi
-        run: zip -r WebApi.zip ./AlertHub.WebApi/publish
-
+      # 3️⃣ Azure Login (Service Principal)
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # ----- Function App Deployment -----
+      - name: Publish Function App
+        run: dotnet publish AlertHub.Api -c Release -o ./publish/AlertHub.Api
+
+      - name: Zip Function App
+        run: zip -r FunctionApp.zip ./publish/AlertHub.Api
+
+      - name: Deploy Function App ZIP
+        run: |
+          az functionapp deployment source config-zip \
+            --resource-group alert-hub-rg \
+            --name alert-hub-api \
+            --src FunctionApp.zip
+
+      # ----- WebApi Deployment -----
+      - name: Publish WebApi
+        run: dotnet publish AlertHub.WebApi -c Release -o ./publish/AlertHub.WebApi
+
+      - name: Zip WebApi
+        run: zip -r WebApi.zip ./publish/AlertHub.WebApi
 
       - name: Deploy WebApi ZIP
         run: |
@@ -49,13 +53,17 @@ jobs:
             --name alert-hub-webapi \
             --src WebApi.zip
 
-      # ----- SSE Endpoint Check -----
+      # # ----- SSE Endpoint Verification -----
       # - name: Verify SSE Endpoint
       #   run: |
-      #     URL="https://alert-hub-webapi.azurewebsites.net/sse-endpoint"  # replace with your actual SSE endpoint
-      #     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
+      #     URL="https://alert-hub-webapi.azurewebsites.net/sse-endpoint"
+      #     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
       #     if [ "$HTTP_STATUS" -ne 200 ]; then
-      #       echo "SSE endpoint check failed with status $HTTP_STATUS"
+      #       echo "❌ SSE endpoint check failed with status $HTTP_STATUS"
       #       exit 1
       #     fi
-      #     echo "SSE endpoint is live!"
+      #     echo "✅ SSE endpoint is live!"
+
+      # ----- Optional Cleanup -----
+      - name: Cleanup build artifacts
+        run: rm -rf ./publish ./FunctionApp.zip ./WebApi.zip
