@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️ Checkout repository
       - uses: actions/checkout@v3
 
-      # 2️⃣ Setup .NET 10
+      # 2️ Setup .NET 10
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '10.0.x'
 
-      # 3️⃣ Azure Login (Service Principal)
+      # 3️ Azure Login using service principal
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -27,7 +27,11 @@ jobs:
 
       # ----- Function App Deployment -----
       - name: Publish Function App
-        run: dotnet publish ./AlertHub.Api/AlertHub.Api.csproj -c Release -o ./publish/FunctionApp
+        run: |
+          dotnet publish ./AlertHub.Api/AlertHub.Api.csproj \
+            -c Release \
+            -o $PWD/publish/FunctionApp \
+            /p:AppSettingsFile=appsettings.function.json
 
       - name: Zip Function App
         run: zip -r FunctionApp.zip ./publish/FunctionApp
@@ -41,7 +45,11 @@ jobs:
 
       # ----- WebApi Deployment -----
       - name: Publish WebApi
-        run: dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj -c Release -o ./publish/WebApi
+        run: |
+          dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj \
+            -c Release \
+            -o $PWD/publish/WebApi \
+            /p:AppSettingsFile=appsettings.webapi.json
 
       - name: Zip WebApi
         run: zip -r WebApi.zip ./publish/WebApi
