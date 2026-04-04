@@ -11,16 +11,20 @@ builder.Configuration
 builder.Services.Configure<RedisOptions>(
     builder.Configuration.GetSection("Redis"));
 
-builder.Services.AddControllers();
+var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ?? 
+    throw new ArgumentNullException("Redis connection string not found in appsettings.json");
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(
-        Environment.GetEnvironmentVariable("REDIS_CONNECTION") ??
-                builder.Configuration["Redis:ConnectionString"]!));
+    ConnectionMultiplexer.Connect(redisConnectionString));
+builder.Services.AddHealthChecks()
+    .AddRedis(redisConnectionString, name: "Redis");
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();

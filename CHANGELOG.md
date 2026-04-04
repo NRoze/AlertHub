@@ -16,8 +16,15 @@ Following [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [v0.1.9] – 2026-04-04
+## [v0.1.14] – 2026-04-04
 **Bug fixes**
 - Fix CD workflow to correctly deploy to Azure
+
+---
+
+## [v0.2.0] – 2026-04-04
+***Infrastructure**
+- Added Health Check endpoint to WebApi
+- Added Health Function to Azure Function App
 
 ---
