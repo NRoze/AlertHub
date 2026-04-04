@@ -27,10 +27,10 @@ jobs:
 
       # ----- Function App Deployment -----
       - name: Publish Function App
-        run: dotnet publish AlertHub.Api -c Release -o ./publish/AlertHub.Api
+        run: dotnet publish ./AlertHub.Api/AlertHub.Api.csproj -c Release -o ./publish/FunctionApp
 
       - name: Zip Function App
-        run: zip -r FunctionApp.zip ./publish/AlertHub.Api
+        run: zip -r FunctionApp.zip ./publish/FunctionApp
 
       - name: Deploy Function App ZIP
         run: |
@@ -41,10 +41,10 @@ jobs:
 
       # ----- WebApi Deployment -----
       - name: Publish WebApi
-        run: dotnet publish AlertHub.WebApi -c Release -o ./publish/AlertHub.WebApi
+        run: dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj -c Release -o ./publish/WebApi
 
       - name: Zip WebApi
-        run: zip -r WebApi.zip ./publish/AlertHub.WebApi
+        run: zip -r WebApi.zip ./publish/WebApi
 
       - name: Deploy WebApi ZIP
         run: |
