@@ -33,8 +33,11 @@ jobs:
             -o $PWD/publish/FunctionApp \
             /p:AppSettingsFile=appsettings.function.json
 
-      - name: Zip Function App
-        run: zip -r FunctionApp.zip ./publish/FunctionApp
+      - name: Zip Function App Contents
+        run: |
+          cd ./publish/FunctionApp
+          zip -r ../../FunctionApp.zip .   # zip **contents** of folder
+          cd ../../
 
       - name: Deploy Function App ZIP
         run: |
@@ -51,8 +54,11 @@ jobs:
             -o $PWD/publish/WebApi \
             /p:AppSettingsFile=appsettings.webapi.json
 
-      - name: Zip WebApi
-        run: zip -r WebApi.zip ./publish/WebApi
+      - name: Zip WebApi Contents
+        run: |
+          cd ./publish/WebApi
+          zip -r ../../WebApi.zip .   # zip **contents** of folder
+          cd ../../
 
       - name: Deploy WebApi ZIP
         run: |
@@ -61,10 +67,10 @@ jobs:
             --name alert-hub-webapi \
             --src WebApi.zip
 
-      # # ----- SSE Endpoint Verification -----
+      # ----- SSE Endpoint Verification (optional) -----
       # - name: Verify SSE Endpoint
       #   run: |
-      #     URL="https://alert-hub-webapi.azurewebsites.net/sse-endpoint"
+      #     URL="https://alert-hub-webapi.azurewebsites.net/api/alerts/sse"
       #     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
       #     if [ "$HTTP_STATUS" -ne 200 ]; then
       #       echo "❌ SSE endpoint check failed with status $HTTP_STATUS"

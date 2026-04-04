@@ -16,7 +16,7 @@ Following [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [v0.1.7] – 2026-04-04
+## [v0.1.8] – 2026-04-04
 **Bug fixes**
 - Fix CD workflow to correctly deploy to Azure
 
