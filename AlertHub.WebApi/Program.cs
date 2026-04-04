@@ -3,6 +3,11 @@ using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.webapi.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 builder.Services.Configure<RedisOptions>(
     builder.Configuration.GetSection("Redis"));
 
