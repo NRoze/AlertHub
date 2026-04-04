@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1. Checkout repo
       - uses: actions/checkout@v3
 
       # 2. Setup .NET 10
@@ -21,7 +21,7 @@ jobs:
 
       # ----- Function App Deployment -----
       - name: Publish Function App
-        run: dotnet publish AlertHub.Api -c Release -o publish
+        run: dotnet publish AlertHub.Api -c Release -o ./AlertHub.Api/publish
 
       - name: Deploy Function App
         uses: Azure/functions-action@v1
@@ -32,7 +32,7 @@ jobs:
 
       # ----- WebApi Deployment (Linux ZIP) -----
       - name: Publish WebApi
-        run: dotnet publish AlertHub.WebApi -c Release -o publish
+        run: dotnet publish AlertHub.WebApi -c Release -o ./AlertHub.WebApi/publish
 
       - name: Zip WebApi
         run: zip -r WebApi.zip ./AlertHub.WebApi/publish
@@ -49,9 +49,10 @@ jobs:
             --name alert-hub-webapi \
             --src WebApi.zip
 
+      # ----- SSE Endpoint Check -----
       # - name: Verify SSE Endpoint
       #   run: |
-      #     URL="https://alert-hub-webapi.azurewebsites.net/sse-endpoint"  # replace with your actual endpoint
+      #     URL="https://alert-hub-webapi.azurewebsites.net/sse-endpoint"  # replace with your actual SSE endpoint
       #     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
       #     if [ "$HTTP_STATUS" -ne 200 ]; then
       #       echo "SSE endpoint check failed with status $HTTP_STATUS"
