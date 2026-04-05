@@ -1,4 +1,5 @@
 ﻿using AlertHub.Api.Options;
+using AlertHub.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -56,7 +57,8 @@ public class AlertsController : ControllerBase
     { 
             if (message.HasValue)
             {
-                _logger.LogInformation("Message received on #{Channel}", channel);
+                if (_logger.IsEnabled(LogLevel.Debug)) _logger.MessageRecieved(channel!);
+            
                 string jsonString = JsonSerializer.Serialize(message.ToString()); 
                 var data = $"data: {jsonString}\n\n";
 
@@ -67,7 +69,7 @@ public class AlertsController : ControllerBase
             }
             catch 
             {
-                    _logger.LogInformation("Client disconnected from #{Channel}", channel);
+                if (_logger.IsEnabled(LogLevel.Debug)) _logger.ClientDisconnected(channel!);
             }
         }
     }
