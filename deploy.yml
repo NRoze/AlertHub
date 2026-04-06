@@ -1,0 +1,166 @@
+name: CD - Deploy Changed Apps on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+
+  # -----------------------------
+  # Detect Changes (shared job)
+  # -----------------------------
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      react: ${{ steps.filter.outputs.react }}
+      webapi: ${{ steps.filter.outputs.webapi }}
+      function: ${{ steps.filter.outputs.function }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: filter
+        run: |
+          PREV=$(git rev-list --tags --skip=1 --max-count=1)
+
+          echo "Checking changes since $PREV"
+
+          REACT=$(git diff --name-only $PREV $GITHUB_SHA | grep '^AlertHub.React/' || true)
+          WEBAPI=$(git diff --name-only $PREV $GITHUB_SHA | grep '^AlertHub.WebApi/' || true)
+          FUNCTION=$(git diff --name-only $PREV $GITHUB_SHA | grep '^AlertHub.Api/' || true)
+
+          echo "react=$REACT" >> $GITHUB_OUTPUT
+          echo "webapi=$WEBAPI" >> $GITHUB_OUTPUT
+          echo "function=$FUNCTION" >> $GITHUB_OUTPUT
+
+  # -----------------------------
+  # React (Static Web App)
+  # -----------------------------
+  react:
+    needs: changes
+    if: needs.changes.outputs.react != ''
+    runs-on: ubuntu-latest
+    name: Deploy React App
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install OIDC Client
+        run: npm install @actions/core@1.6.0 @actions/http-client
+
+      - name: Get Id Token
+        uses: actions/github-script@v6
+        id: idtoken
+        with:
+          script: |
+            const core = require('@actions/core')
+            return await core.getIDToken()
+          result-encoding: string
+
+      - name: Build And Deploy React
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }}
+          action: "upload"
+          app_location: "./AlertHub.React"
+          output_location: "dist"
+          github_id_token: ${{ steps.idtoken.outputs.result }}
+
+  # -----------------------------
+  # WebAPI
+  # -----------------------------
+  webapi:
+    needs: changes
+    if: needs.changes.outputs.webapi != ''
+    runs-on: ubuntu-latest
+    name: Deploy WebApi
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Publish WebApi
+        run: |
+          dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj \
+            -c Release \
+            -o $PWD/publish/WebApi \
+            /p:AppSettingsFile=appsettings.webapi.json
+
+      - name: Zip WebApi
+        run: |
+          cd ./publish/WebApi
+          zip -r ../../WebApi.zip .
+          cd ../../
+
+      - name: Deploy WebApi
+        run: |
+          az webapp deploy \
+            --resource-group alert-hub-rg \
+            --name alert-hub-webapi \
+            --src-path WebApi.zip \
+            --type zip
+
+      - name: Set startup command
+        run: |
+          az webapp config set \
+            --resource-group alert-hub-rg \
+            --name alert-hub-webapi \
+            --startup-file "dotnet AlertHub.WebApi.dll"
+
+  # -----------------------------
+  # Function App
+  # -----------------------------
+  function:
+    needs: changes
+    if: needs.changes.outputs.function != ''
+    runs-on: ubuntu-latest
+    name: Deploy Function App
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Publish Function
+        run: |
+          dotnet publish ./AlertHub.Api/AlertHub.Api.csproj \
+            -c Release \
+            -o $PWD/publish/FunctionApp \
+            /p:AppSettingsFile=appsettings.function.json
+
+      - name: Zip Function
+        run: |
+          cd ./publish/FunctionApp
+          zip -r ../../FunctionApp.zip .
+          cd ../../
+
+      - name: Deploy Function
+        run: |
+          az functionapp deploy \
+            --resource-group alert-hub-rg \
+            --name alert-hub-api \
+            --src-path FunctionApp.zip \
+            --type zip
