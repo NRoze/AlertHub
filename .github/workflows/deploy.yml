@@ -24,14 +24,17 @@ jobs:
       - name: Detect changed files
         id: filter
         run: |
-          echo "Detecting changes for commit: $GITHUB_SHA"
+          echo "Detecting changes for tag: $GITHUB_REF"
 
-          # Fallback-safe parent detection
-          if git rev-parse "$GITHUB_SHA^" >/dev/null 2>&1; then
-            BASE="$GITHUB_SHA^"
-          else
-            echo "No parent commit found, using initial commit"
+          # Get previous tag (safe)
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous tag found, using initial commit"
             BASE=$(git rev-list --max-parents=0 HEAD)
+          else
+            echo "Previous tag: $PREV_TAG"
+            BASE=$PREV_TAG
           fi
 
           echo "Diffing: $BASE -> $GITHUB_SHA"

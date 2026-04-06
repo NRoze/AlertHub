@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using AlertHub.Api.Options;
 using AlertHub.Api.Middleware;
 using StackExchange.Redis;
-
+//chanhed
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
     {
