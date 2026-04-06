@@ -35,8 +35,8 @@ var host = new HostBuilder()
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));
         
-        var useSimulatedAlerts = context.Configuration.GetSection("PikudPoller")
-                                    .Get<PikudPollerOptions>()?.UseSimulatedAlerts == true;
+        var useSimulatedAlerts = context.Configuration.GetValue<bool>("PikudPoller:UseSimulatedAlerts");
+
         if (useSimulatedAlerts)
         {
             services.AddScoped<IPikudPollerService, SimulatedPikudPollerService>();

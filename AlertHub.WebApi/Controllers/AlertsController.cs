@@ -1,9 +1,9 @@
 ﻿using AlertHub.Api.Options;
 using AlertHub.WebApi.Logging;
+using AlertHub.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using System.Text.Json;
 
 namespace AlertHub.WebApi.Controllers;
 
@@ -58,9 +58,7 @@ public class AlertsController : ControllerBase
             if (message.HasValue)
             {
                 if (_logger.IsEnabled(LogLevel.Debug)) _logger.MessageRecieved(channel!);
-            
-                string jsonString = JsonSerializer.Serialize(message.ToString()); 
-                var data = $"data: {jsonString}\n\n";
+                var data = $"data: {message.MinifyJson()}\n\n";
 
                 try
                 {

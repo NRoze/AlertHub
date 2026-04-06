@@ -1,0 +1,117 @@
+/* ─── Map container ──────────────────────────────────────────────────────── */
+.alerts-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  outline: none;
+}
+
+/* ─── Custom marker ──────────────────────────────────────────────────────── */
+.alert-marker {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.alert-marker:hover {
+  transform: scale(1.15);
+}
+
+.alert-marker__emoji {
+  font-size: 22px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+@keyframes marker-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--marker-color, #ef4444) 25%, transparent),
+      0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px color-mix(in srgb, var(--marker-color, #ef4444) 12%, transparent),
+      0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ─── Popup ──────────────────────────────────────────────────────────────── */
+.alert-popup .leaflet-popup-content-wrapper {
+  background: #1a1b23;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  padding: 0;
+  overflow: hidden;
+  direction: rtl;
+}
+
+.alert-popup .leaflet-popup-tip {
+  background: #1a1b23;
+}
+
+.alert-popup .leaflet-popup-content {
+  margin: 0;
+  color: #f3f4f6;
+}
+
+.alert-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.alert-popup__emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.alert-popup__type {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #e5e7eb;
+  text-transform: uppercase;
+}
+
+.alert-popup__location {
+  padding: 8px 14px 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f9fafb;
+}
+
+.alert-popup__message {
+  padding: 4px 14px 4px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.alert-popup__since {
+  padding: 4px 14px 12px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.emoji-marker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px; /* 50% of 24px original */
+  line-height: 1;
+  color: black; /* default color, can override with class or style */
+}
+
+.emoji-marker__line {
+  width: 1px;       /* 50% of 2px original */
+  height: 5.5px;    /* 50% of 15px original */
+  background-color: currentColor; /* inherit emoji color */
+}

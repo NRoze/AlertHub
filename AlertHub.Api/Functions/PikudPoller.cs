@@ -3,7 +3,6 @@ using AlertHub.Api.Models;
 using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Text.Json;
@@ -37,8 +36,6 @@ internal sealed class PikudPoller
     {
         var logger = context.GetLogger("PikudPoller");
         
-        //logger.LogScheduledExecution(timer);
-
         try
         {
             var alerts = await _pikudPollerService

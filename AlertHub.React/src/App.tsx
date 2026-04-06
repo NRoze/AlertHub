@@ -1,17 +1,15 @@
-import { useAlertsSSE } from "./hooks/useAlertsSSE";
+import { AlertsView } from "./features/alerts/components/AlertsView";
 
 function App() {
-  const alerts = useAlertsSSE();
-
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>AlertHub 🚨</h1>
-      <p>Listening for alerts...</p>
-      <ul>
-        {alerts?.map((alert, index) => (
-          <li key={index}>{alert}</li>
-        ))}
-      </ul>
+    <div className="app">
+      <header className="app-header">
+        <h1 className="app-header__title">🛡️ AlertHub</h1>
+        <span className="app-header__subtitle">Israel Real-Time Alert Map</span>
+      </header>
+      <main className="app-main">
+        <AlertsView />
+      </main>
     </div>
   );
 }
