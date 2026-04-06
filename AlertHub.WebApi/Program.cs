@@ -8,6 +8,16 @@ builder.Configuration
     .AddJsonFile("appsettings.webapi.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+        policy.WithOrigins("http://localhost:5173",
+                           "https://wonderful-field-0b7bb1810.1.azurestaticapps.net")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
+
 builder.Services.Configure<RedisOptions>(
     builder.Configuration.GetSection("Redis"));
 
