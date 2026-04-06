@@ -62,10 +62,10 @@ jobs:
 
       - name: Deploy WebApi ZIP
         run: |
-          az webapp deployment source config-zip \
+          az webapp deploy source config-zip \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
-            --src WebApi.zip
+            --src-path WebApi.zip
 
       - name: Set WebApi startup command
         run: |
