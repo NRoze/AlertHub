@@ -50,7 +50,7 @@ const AlertMarker: React.FC<{ alert: ActiveAlertLocation }> = ({ alert }) => {
         </div>
         <div className="alert-popup__message">{alert.message}</div>
         <div className="alert-popup__since">
-          Expires {alert.recievedAt.toLocaleTimeString()}
+          Since {alert.recievedAt.toLocaleTimeString()}
         </div>
       </Popup>
     </Marker>

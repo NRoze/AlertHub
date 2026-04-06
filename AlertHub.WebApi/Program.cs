@@ -34,6 +34,8 @@ var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
+app.UseCors("AllowReactApp");
+
 app.MapHealthChecks("/health");
 app.MapControllers();
 
