@@ -74,7 +74,11 @@ jobs:
         uses: actions/github-script@v6
         id: idtoken
         with:
-          script: "return await core.getIDToken();"
+          script: |
+            const coredemo = require('@actions/core');
+            const token = await coredemo.getIDToken();
+            coredemo.info(`Retrieved ID token: ${token.slice(0, 20)}...`);
+            return token;
           result-encoding: string
 
       - name: Build And Deploy React
@@ -83,6 +87,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }}
           action: "upload"
           app_location: "./AlertHub.React"
+          api_location: ""              
           output_location: "dist"
           github_id_token: ${{ steps.idtoken.outputs.result }}
 
