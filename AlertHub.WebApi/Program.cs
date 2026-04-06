@@ -1,6 +1,6 @@
 using AlertHub.Api.Options;
 using StackExchange.Redis;
-//changed
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
@@ -31,6 +31,8 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection(); 
+app.UseRouting();
 app.UseCors("AllowReactApp");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
