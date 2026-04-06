@@ -37,9 +37,6 @@ export const AlertsView: React.FC = () => {
                   <span className="alert-popup__emoji">{alertTypeIconMap[alert.alertType]}</span>
                   {alert.location.name}
                 </div>
-                {/* {alert.location.area && (
-                  <div className="sidebar__item-area">{alert.location.area}</div>
-                )} */}
                 <div className="sidebar__item-recieved">
                   Since {alert.recievedAt.toLocaleTimeString()}
                 </div>

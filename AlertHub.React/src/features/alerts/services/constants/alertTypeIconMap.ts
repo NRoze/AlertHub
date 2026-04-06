@@ -10,11 +10,11 @@ export const alertTypeIconMap: Record<AlertType, string> = {
 };
 
 
-export const alertTypeColorMap: Record<AlertType, string> = {
-  [AlertType.ROCKET_FIRE]: "#e7060650",
-  [AlertType.UAV_INTRUSION]: "#a3440056",
-  [AlertType.INFILTRATION]: "#83084c5d",
-  [AlertType.PRE_ALERT]: "#cca91040",
-  [AlertType.EVENT_ENDED]: "#21ce2942",
-  [AlertType.UNKNOWN]: "#6b728050",
+export const alertTypeLineColorMap: Record<AlertType, string> = {
+  [AlertType.ROCKET_FIRE]: "black",
+  [AlertType.UAV_INTRUSION]: "black",
+  [AlertType.INFILTRATION]: "black",
+  [AlertType.PRE_ALERT]: "black",
+  [AlertType.EVENT_ENDED]: "black",
+  [AlertType.UNKNOWN]: "black",
 };

@@ -1,15 +1,14 @@
 import L from "leaflet";
-import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
-import { alertTypeColorMap } from "../services/constants/alertTypeIconMap";
+import { alertTypeLineColorMap, alertTypeIconMap } from "../services/constants/alertTypeIconMap";
 import { AlertType } from "../model/AlertType";
 
 export const createAlertIcon = (type: AlertType) => {
   const emoji = alertTypeIconMap[type];
-  const color = "black";//alertTypeColorMap[type];
+  const color = alertTypeLineColorMap[type];
   const html = `
-    <div class="emoji-marker" style="color: ${color}">
+    <div class="emoji-marker">
       <div>${emoji}</div>
-      <div class="emoji-marker__line"></div>
+      <div class="emoji-marker__line" style="color: ${color}"></div>
     </div>
   `;
 

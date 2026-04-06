@@ -1,14 +1,11 @@
 import type { Alert } from "../model/Alert";
 import type { ActiveAlertLocation } from "../model/ActiveAlertLocation";
 import type { Location } from "../model/Location";
+import type { AlertsAction } from "../model/AlertsAction";
 
 export type AlertsState = {
   alerts: Map<string, ActiveAlertLocation>;
 };
-
-export type AlertsAction =
-  | { type: "ADD_ALERT"; payload: Alert }
-  | { type: "CLEAN_EXPIRED"; now: number };
 
 export const initialAlertsState: AlertsState = { alerts: new Map() };
 
@@ -45,20 +42,9 @@ function addOrUpdateAlert(state: AlertsState, alert: Alert): AlertsState {
   return { alerts: newMap };
 }
 
-// function removeAlertLocations(state: AlertsState, alert: Alert): AlertsState {
-//   const newMap = new Map(state.alerts);
-  
-//   alert.locations?.forEach((location) => {
-//     newMap.delete(getLocationKey(location));
-//   });
-
-//   return { alerts: newMap };
-// }
-
 function handlePayload(state: AlertsState, alert: Alert): AlertsState {
   switch (alert.type) {
     case "EVENT_ENDED":
-      // return removeAlertLocations(state, alert);
     case "ROCKET_FIRE":
     case "PRE_ALERT":
       return addOrUpdateAlert(state, alert);
