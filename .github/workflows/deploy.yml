@@ -24,17 +24,33 @@ jobs:
       - name: Detect changed files
         id: filter
         run: |
-          PREV=$(git rev-list --tags --skip=1 --max-count=1)
+          - name: Detect changed files
+            id: filter
+            run: |
+              echo "Detecting changes for commit: $GITHUB_SHA"
 
-          echo "Checking changes since $PREV"
+              # Fallback-safe parent detection
+              if git rev-parse "$GITHUB_SHA^" >/dev/null 2>&1; then
+                BASE="$GITHUB_SHA^"
+              else
+                echo "No parent commit found, using initial commit"
+                BASE=$(git rev-list --max-parents=0 HEAD)
+              fi
 
-          REACT=$(git diff --name-only $PREV $GITHUB_SHA | grep '^AlertHub.React/' || true)
-          WEBAPI=$(git diff --name-only $PREV $GITHUB_SHA | grep '^AlertHub.WebApi/' || true)
-          FUNCTION=$(git diff --name-only $PREV $GITHUB_SHA | grep '^AlertHub.Api/' || true)
+              echo "Diffing: $BASE -> $GITHUB_SHA"
 
-          echo "react=$REACT" >> $GITHUB_OUTPUT
-          echo "webapi=$WEBAPI" >> $GITHUB_OUTPUT
-          echo "function=$FUNCTION" >> $GITHUB_OUTPUT
+              CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
+
+              echo "Changed files:"
+              echo "$CHANGED"
+
+              REACT=$(echo "$CHANGED" | grep '^AlertHub.React/' || true)
+              WEBAPI=$(echo "$CHANGED" | grep '^AlertHub.WebApi/' || true)
+              FUNCTION=$(echo "$CHANGED" | grep '^AlertHub.Api/' || true)
+
+              echo "react=$REACT" >> $GITHUB_OUTPUT
+              echo "webapi=$WEBAPI" >> $GITHUB_OUTPUT
+              echo "function=$FUNCTION" >> $GITHUB_OUTPUT
 
   # -----------------------------
   # React (Static Web App)
