@@ -1,7 +1,7 @@
 import React from "react";
 import { useAlertsSSE } from "../hooks/useAlertsSSE";
 import { AlertsMap } from "./AlertsMap";
-import { config } from "../../../config";
+import { config } from "../../../config/config";
 import "./AlertsView.css";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
 
