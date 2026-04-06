@@ -1,17 +1,5 @@
-/**
- * Centralized app configuration.
- * Reads from Vite environment variables.
- */
-function requireEnv(name: string): string {
-  const value = import.meta.env[name];
-  
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
+const alertsSseUrl = import.meta.env.VITE_ALERTS_SSE_URL;
+console.log("SSE URL:", import.meta.env.VITE_ALERTS_SSE_URL);
+if (!alertsSseUrl) throw new Error("Missing VITE_ALERTS_SSE_URL");
 
-  return value;
-}
-
-export const config = {
-  alertsSseUrl: requireEnv("VITE_ALERTS_SSE_URL"),
-} as const;
+export const config = { alertsSseUrl } as const;
