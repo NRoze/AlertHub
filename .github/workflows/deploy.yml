@@ -75,8 +75,9 @@ jobs:
         id: idtoken
         with:
           script: |
-            const core = require('@actions/core')
-            return await core.getIDToken()
+            const token = await core.getIDToken();
+            core.info(`Retrieved ID token: ${token.slice(0, 20)}...`);
+            return token;
           result-encoding: string
 
       - name: Build And Deploy React
