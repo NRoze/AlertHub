@@ -18,9 +18,21 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
+            if (context.Response.HasStarted)
+            {
+                return;
+            }
+
+            var corsHeader = context.Response.Headers["Access-Control-Allow-Origin"];
+
             context.Response.Clear();
+            if (!string.IsNullOrEmpty(corsHeader))
+            {
+                context.Response.Headers.Append("Access-Control-Allow-Origin", corsHeader);
+            }
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.Headers.Append("Content-Type", "application/problem+json");
+            context.Response.ContentType = "application/problem+json";
 
             var problemDetails = new
             {
@@ -31,6 +43,7 @@ public class GlobalExceptionMiddleware
             };
 
             var json = JsonSerializer.Serialize(problemDetails);
+
             await context.Response.WriteAsync(json);
         }
     }
