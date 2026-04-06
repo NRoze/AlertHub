@@ -41,10 +41,10 @@ jobs:
 
       - name: Deploy Function App ZIP
         run: |
-          az functionapp deployment source config-zip \
+          az functionapp deploy \
             --resource-group alert-hub-rg \
             --name alert-hub-api \
-            --src FunctionApp.zip
+            --src-path FunctionApp.zip
 
       # ----- WebApi Deployment -----
       - name: Publish WebApi
@@ -62,7 +62,7 @@ jobs:
 
       - name: Deploy WebApi ZIP
         run: |
-          az webapp deploy source config-zip \
+          az webapp deploy \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
             --src-path WebApi.zip
