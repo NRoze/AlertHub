@@ -15,8 +15,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:5173",
                            "https://wonderful-field-0b7bb1810.1.azurestaticapps.net")
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials());
+              .AllowAnyMethod());
 });
 
 builder.Services.Configure<RedisOptions>(
@@ -33,9 +32,9 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseMiddleware<GlobalExceptionMiddleware>();
-
 app.UseCors("AllowReactApp");
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapHealthChecks("/health");
 app.MapControllers();

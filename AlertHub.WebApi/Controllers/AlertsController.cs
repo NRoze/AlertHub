@@ -30,7 +30,7 @@ public class AlertsController : ControllerBase
     {
         Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
         Response.Headers.Append("Cache-Control", "no-cache");
-        Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        Response.Headers.Append("Connection", "keep-alive");
 
         var subscriber = _redis.GetSubscriber();
         var tcs = new TaskCompletionSource();
