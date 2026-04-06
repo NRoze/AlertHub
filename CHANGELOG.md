@@ -28,3 +28,11 @@ Following [Semantic Versioning](https://semver.org/).
 - Added Health Function to Azure Function App
 
 ---
+
+## [v0.3.0] – 2026-04-06
+***Features**
+- Added a react-leaflet map to the frontend
+- Alerts shown for a congurable expiry time on the map
+- Including GitHub workflow for React depoly
+
+---

@@ -44,7 +44,8 @@ jobs:
           az functionapp deploy \
             --resource-group alert-hub-rg \
             --name alert-hub-api \
-            --src-path FunctionApp.zip
+            --src-path FunctionApp.zip \
+            --type zip
 
       # ----- WebApi Deployment -----
       - name: Publish WebApi
@@ -65,7 +66,8 @@ jobs:
           az webapp deploy \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
-            --src-path WebApi.zip
+            --src-path WebApi.zip \
+            --type zip
 
       - name: Set WebApi startup command
         run: |
