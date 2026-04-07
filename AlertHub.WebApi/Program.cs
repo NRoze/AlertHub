@@ -25,7 +25,12 @@ var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ??
     throw new ArgumentNullException("Redis connection string not found in appsettings.json");
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(redisConnectionString));
+{
+    var config = ConfigurationOptions.Parse(redisConnectionString);
+    config.AbortOnConnectFail = false;
+    return ConnectionMultiplexer.Connect(config);
+});
+
 builder.Services.AddHealthChecks()
     .AddRedis(redisConnectionString, name: "Redis");
 builder.Services.AddControllers();
