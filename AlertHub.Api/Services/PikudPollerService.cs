@@ -1,4 +1,3 @@
-using AlertHub.Api.Extensions;
 using AlertHub.Api.Options;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
