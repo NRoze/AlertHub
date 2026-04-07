@@ -71,7 +71,8 @@ jobs:
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
             --src-path WebApi.zip \
-            --type zip
+            --type zip \
+            --async true
 
       - name: Set WebApi Startup Command
         # This is critical. It tells Azure exactly which DLL to run.

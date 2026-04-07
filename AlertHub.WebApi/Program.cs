@@ -46,4 +46,5 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 app.MapHealthChecks("/health");
 app.MapControllers();
 
+app.MapGet("/", () => Results.Redirect("/health"));
 app.Run();
