@@ -95,7 +95,7 @@ jobs:
           # Note: We point to AlertHub.React/dist because that is where the build lives
           swa deploy ./AlertHub.React/dist \
             --env production \
-            --deployment-token ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }}
+            --deployment-token ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }} \
             --verbose silly
   # react:
   #   needs: changes
