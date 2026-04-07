@@ -38,6 +38,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseRouting();
+
 app.UseCors("AllowReactApp");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
