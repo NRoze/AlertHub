@@ -28,15 +28,29 @@ jobs:
 
           # Get previous tag (safe)
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          
-          # Get list of changed files
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous tag found, using initial commit"
+            BASE=$(git rev-list --max-parents=0 HEAD)
+          else
+            echo "Previous tag: $PREV_TAG"
+            BASE=$PREV_TAG
+          fi
+
+          echo "Diffing: $BASE -> $GITHUB_SHA"
+
           CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
 
-          # Check for changes in each directory
-          # We use -q (quiet) to just check if the pattern exists
-          echo "react=$(echo "$CHANGED" | grep -q '^AlertHub.React/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "webapi=$(echo "$CHANGED" | grep -q '^AlertHub.WebApi/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "function=$(echo "$CHANGED" | grep -q '^AlertHub.Api/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          REACT=$(echo "$CHANGED" | grep '^AlertHub.React/' || true)
+          WEBAPI=$(echo "$CHANGED" | grep '^AlertHub.WebApi/' || true)
+          FUNCTION=$(echo "$CHANGED" | grep '^AlertHub.Api/' || true)
+
+          echo "react=$REACT" >> $GITHUB_OUTPUT
+          echo "webapi=$WEBAPI" >> $GITHUB_OUTPUT
+          echo "function=$FUNCTION" >> $GITHUB_OUTPUT
 
   # -----------------------------
   # React (Static Web App)
@@ -73,7 +87,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }}
           action: "upload"
           app_location: "./AlertHub.React"
-          output_location: "./AlertHub.React/dist"
+          output_location: "dist"
 
   # -----------------------------
   # WebAPI
@@ -110,33 +124,20 @@ jobs:
           zip -r ../../WebApi.zip .
           cd ../../
 
-      - name: Stop Web App (Prevents 502/File Locks)
-        run: az webapp stop --name alert-hub-webapi --resource-group alert-hub-rg
-
       - name: Deploy WebApi
         run: |
           az webapp deploy \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
             --src-path WebApi.zip \
-            --type zip \
-            --timeout 600
+            --type zip
 
       - name: Set startup command
         run: |
           az webapp config set \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
-            --startup-file "dotnet AlertHub.WebApi.dll" \
-            --linux-fx-version "DOTNET|10.0"
-            
-          az webapp update \
-            --resource-group alert-hub-rg \
-            --name alert-hub-webapi \
-            --https-only true
-
-      - name: Start Web App
-        run: az webapp start --name alert-hub-webapi --resource-group alert-hub-rg
+            --startup-file "dotnet AlertHub.WebApi.dll"
 
   # -----------------------------
   # Function App
