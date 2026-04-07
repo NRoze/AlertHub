@@ -1,3 +1,4 @@
+//Trigger deploy
 using Microsoft.Extensions.Hosting;
 using AlertHub.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
