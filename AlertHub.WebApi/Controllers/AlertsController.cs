@@ -28,20 +28,6 @@ public class AlertsController : ControllerBase
     [HttpGet("sse")]
     public async Task GetSSE(CancellationToken cancellationToken)
     {
-        try
-        {
-            // Test if Redis is even alive before starting the stream
-            var db = _redis.GetDatabase();
-            await db.PingAsync();
-
-            await Response.Body.FlushAsync(); // Send 200 OK to browser
-        }
-        catch (Exception ex)
-        {
-            // This will now be caught by your NEW Middleware 
-            // and show the REAL error in the React console.
-            throw new Exception($"Redis Connection Failed: {ex.Message}");
-        }
         Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
         Response.Headers.Append("Cache-Control", "no-cache");
         Response.Headers.Append("Connection", "keep-alive");

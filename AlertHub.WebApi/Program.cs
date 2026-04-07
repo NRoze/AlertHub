@@ -37,7 +37,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-//app.UseHttpsRedirection(); 
 app.UseRouting();
 app.UseCors("AllowReactApp");
 
