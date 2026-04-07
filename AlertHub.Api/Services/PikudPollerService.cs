@@ -26,12 +26,10 @@ internal sealed class PikudPollerService : IPikudPollerService
         
         var response = await client.GetAsync(_pikudApiUrl, cancellationToken);
         response.EnsureSuccessStatusCode();
-        var rawJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        // Trim the BOM (\uFEFF) and whitespace
+        var rawJson = await response.Content.ReadAsStringAsync(cancellationToken);
         rawJson = rawJson.Trim('\uFEFF', ' ');
 
-        // If it's truly empty or just a " " response, exit early
         if (string.IsNullOrWhiteSpace(rawJson)) return [];
 
         using var json = JsonDocument.Parse(rawJson);
@@ -40,15 +38,5 @@ internal sealed class PikudPollerService : IPikudPollerService
             return [];
 
         return [.. data.EnumerateArray().Select(a => a.GetString() ?? string.Empty)];
-        //using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-
-        //if (stream.IsEmpty(emptyLength: 5)) return [];
-
-        //var json = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
-
-        //if (!json.TryGetProperty(_dataPropertyName, out var data)) return [];
-
-        //return [.. data.EnumerateArray().Select(a => a.GetString() ?? default!)];
-
     }
 }
