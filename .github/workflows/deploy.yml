@@ -51,18 +51,16 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Publish WebApi
-        # We add --no-self-contained to keep the zip light
-        # and ensure we only publish the WebApi project
         run: |
           dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj \
-            -c Release \
-            -o ./publish/WebApi \
-            --configuration Release
+            --configuration Release \
+            --output ./publish/WebApi \
+            --no-self-contained
 
       - name: Zip WebApi
         run: |
           cd ./publish/WebApi
-          # Remove any leftover function app files if they leaked in
+          # Clean out any "leakage" from the Function project
           rm -f host.json functions.metadata worker.config.json
           zip -r ../../WebApi.zip .
           cd ../../

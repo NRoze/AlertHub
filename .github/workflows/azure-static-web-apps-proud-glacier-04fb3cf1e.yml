@@ -21,15 +21,18 @@ jobs:
         run: |
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
+          CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
+
+          echo "run_deploy=$(echo "$CHANGED" | grep '^AlertHub.React/' || true)" >> $GITHUB_OUTPUT
           # Check if any files in the React folder changed
-          if git diff --name-only $BASE $GITHUB_SHA | grep -q '^AlertHub.React/'; then
-            echo "run_deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "run_deploy=false" >> $GITHUB_OUTPUT
-          fi
+          # if git diff --name-only $BASE $GITHUB_SHA | grep -q '^AlertHub.React/'; then
+          #   echo "run_deploy=true" >> $GITHUB_OUTPUT
+          # else
+          #   echo "run_deploy=false" >> $GITHUB_OUTPUT
+          # fi
 
       - name: Build And Deploy
-        if: steps.check_react.outputs.run_deploy == 'true'
+        if: steps.check_react.outputs.run_deploy != ''
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
