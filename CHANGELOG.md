@@ -36,3 +36,11 @@ Following [Semantic Versioning](https://semver.org/).
 - Including GitHub workflow for React depoly
 
 ---
+
+## [v0.5.0] – 2026-04-06
+***Features**
+- Conditional deployment by repo change since last release tag
+- Work around free tier SSE implementation by keepalives
+- Fixed azure and asp.net conflicts
+
+---
