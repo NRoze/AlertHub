@@ -21,20 +21,35 @@ internal sealed class PikudPollerService : IPikudPollerService
 
     public async Task<IReadOnlyList<string>> GetAlertsAsJson(CancellationToken cancellationToken)
     {
-        var response = await _httpClientFactory.CreateClient()
-            .GetAsync(_pikudApiUrl, cancellationToken);
-
+        var client = _httpClientFactory.CreateClient();
+        client.DefaultRequestHeaders.Referrer = new Uri("https://www.oref.org.il/");
+        client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+        
+        var response = await client.GetAsync(_pikudApiUrl, cancellationToken);
         response.EnsureSuccessStatusCode();
+        var rawJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        // Trim the BOM (\uFEFF) and whitespace
+        rawJson = rawJson.Trim('\uFEFF', ' ');
 
-        if (stream.IsEmpty(emptyLength: 5)) return [];
+        // If it's truly empty or just a " " response, exit early
+        if (string.IsNullOrWhiteSpace(rawJson)) return [];
 
-        var json = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
+        using var json = JsonDocument.Parse(rawJson);
 
-        if (!json.TryGetProperty(_dataPropertyName, out var data)) return [];
+        if (!json.RootElement.TryGetProperty(_dataPropertyName, out var data))
+            return [];
 
-        return [.. data.EnumerateArray().Select(a => a.GetString() ?? default!)];
+        return [.. data.EnumerateArray().Select(a => a.GetString() ?? string.Empty)];
+        //using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+
+        //if (stream.IsEmpty(emptyLength: 5)) return [];
+
+        //var json = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
+
+        //if (!json.TryGetProperty(_dataPropertyName, out var data)) return [];
+
+        //return [.. data.EnumerateArray().Select(a => a.GetString() ?? default!)];
 
     }
 }
