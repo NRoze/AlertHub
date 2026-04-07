@@ -16,4 +16,10 @@
     <ProjectReference Include="..\AlertHub.Api\AlertHub.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.webapi.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
