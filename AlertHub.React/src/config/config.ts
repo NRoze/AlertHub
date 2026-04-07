@@ -7,4 +7,3 @@ if (isNaN(alertsTtlMs)) {
 }
 
 export const config = { alertsSseUrl, alertsTtlMs } as const; 
-//actual
