@@ -94,8 +94,9 @@ jobs:
           # Deploy the build folder created in the previous step
           # Note: We point to AlertHub.React/dist because that is where the build lives
           swa deploy ./AlertHub.React/dist \
-            --env production \
+            --app-name alert-hub-react \
             --deployment-token ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }} \
+            --env production \
             --verbose silly
   # react:
   #   needs: changes
