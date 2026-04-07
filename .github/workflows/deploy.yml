@@ -88,15 +88,16 @@ jobs:
 
       - name: Deploy via Azure CLI
         run: |
-          # Install the CLI tool
           npm install -g @azure/static-web-apps-cli
-        
-          # Deploy the build folder created in the previous step
-          # Note: We point to AlertHub.React/dist because that is where the build lives
-          swa deploy ./AlertHub.React/dist \
+          # 1. Move into the folder where the 'dist' actually lives
+          cd AlertHub.React
+          # 2. Run the deploy from INSIDE that folder pointing to 'dist'
+          # 3. Explicitly provide the --app-name to replace the 'Missing Link'
+          swa deploy ./dist \
             --app-name alert-hub-react \
             --deployment-token ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }} \
             --env production \
+            --branch master \
             --verbose silly
   # react:
   #   needs: changes
