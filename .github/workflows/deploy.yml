@@ -48,9 +48,17 @@ jobs:
           WEBAPI=$(echo "$CHANGED" | grep '^AlertHub.WebApi/' || true)
           FUNCTION=$(echo "$CHANGED" | grep '^AlertHub.Api/' || true)
 
-          echo "react=$REACT" >> $GITHUB_OUTPUT
-          echo "webapi=$WEBAPI" >> $GITHUB_OUTPUT
-          echo "function=$FUNCTION" >> $GITHUB_OUTPUT
+          echo "react<<EOF" >> $GITHUB_OUTPUT
+          echo "$REACT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "webapi<<EOF" >> $GITHUB_OUTPUT
+          echo "$WEBAPI" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "function<<EOF" >> $GITHUB_OUTPUT
+          echo "$FUNCTION" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
   # -----------------------------
   # React (Static Web App)
@@ -88,6 +96,7 @@ jobs:
           action: "upload"
           app_location: "./AlertHub.React"
           output_location: "dist"
+          app_build_command: "npm run build"
 
   # -----------------------------
   # WebAPI
