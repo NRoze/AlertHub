@@ -1,6 +1,3 @@
-using System.Net;
-using System.Text.Json;
-
 public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
@@ -18,33 +15,25 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
-            if (context.Response.HasStarted)
-            {
-                return;
-            }
+            var corsHeader = context.Response.Headers.AccessControlAllowOrigin;
 
-            var corsHeader = context.Response.Headers["Access-Control-Allow-Origin"];
+            if (context.Response.HasStarted) return;
 
             context.Response.Clear();
+
             if (!string.IsNullOrEmpty(corsHeader))
             {
-                context.Response.Headers.Append("Access-Control-Allow-Origin", corsHeader);
+                context.Response.Headers.AccessControlAllowOrigin = corsHeader;
             }
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = 500;
             context.Response.ContentType = "application/problem+json";
 
-            var problemDetails = new
-            {
-                Status = context.Response.StatusCode,
-                Title = "An unexpected error occurred.",
-                Detail = ex.Message,
-                Instance = context.TraceIdentifier
-            };
-
-            var json = JsonSerializer.Serialize(problemDetails);
-
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsJsonAsync(new { 
+                error = ex.Message, 
+                type = ex.GetType().Name,
+                traceId = context.TraceIdentifier 
+            });
         }
     }
 }
