@@ -1,6 +1,7 @@
 using AlertHub.Api.Options;
-using StackExchange.Redis;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
         policy.WithOrigins("http://localhost:5173",
-                           "https://zealous-wave-0f5f18610.6.azurestaticapps.net/")
+                           "https://zealous-wave-0f5f18610.6.azurestaticapps.net")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
@@ -32,22 +33,20 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 builder.Services.AddHealthChecks()
-    .AddRedis(redisConnectionString, name: "Redis");
+    .AddRedis(redisConnectionString,
+              name: "Redis",
+              failureStatus: HealthStatus.Degraded);
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
-
 app.UseRouting();
-
 app.UseCors("AllowReactApp");
-
-app.UseMiddleware<GlobalExceptionMiddleware>();
-
 app.MapHealthChecks("/health");
 app.MapControllers();
 
