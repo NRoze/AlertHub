@@ -75,67 +75,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Install OIDC Client
+        run: npm install @actions/core@1.6.0 @actions/http-client
+
+      - name: Get Id Token
+        uses: actions/github-script@v6
+        id: idtoken
         with:
-          node-version: '20'
+          script: |
+            const coredemo = require('@actions/core');
+            const token = await coredemo.getIDToken();
+            coredemo.info(`Retrieved ID token: ${token.slice(0, 20)}...`);
+            return token;
+          result-encoding: string
 
-      - name: Install and Build React
-        run: |
-          cd AlertHub.React
-          npm install
-          npm run build
-
-      - name: Deploy via Azure CLI
-        run: |
-          npm install -g @azure/static-web-apps-cli
-          # 1. Move into the folder where the 'dist' actually lives
-          cd AlertHub.React
-          # 2. Run the deploy from INSIDE that folder pointing to 'dist'
-          # 3. Explicitly provide the --app-name to replace the 'Missing Link'
-          swa deploy ./dist \
-            --app-name alert-hub-react \
-            --deployment-token ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }} \
-            --env production \
-            --deployment-branch master \
-            --verbose silly
-  # react:
-  #   needs: changes
-  #   if: needs.changes.outputs.react != ''
-  #   runs-on: ubuntu-latest
-  #   name: Deploy React App
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-
-  #   steps:
-  #     - uses: actions/checkout@v3
-
-  #     - name: Install OIDC Client
-  #       run: npm install @actions/core@1.6.0 @actions/http-client
-
-  #     - name: Get Id Token
-  #       uses: actions/github-script@v6
-  #       id: idtoken
-  #       with:
-  #         script: |
-  #           const coredemo = require('@actions/core');
-  #           const token = await coredemo.getIDToken();
-  #           coredemo.info(`Retrieved ID token: ${token.slice(0, 20)}...`);
-  #           return token;
-  #         result-encoding: string
-
-  #     - name: Build And Deploy React
-  #       uses: Azure/static-web-apps-deploy@v1
-  #       with:
-  #         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_FIELD_0B7BB1810 }}
-  #         action: "upload"
-  #         app_location: "AlertHub.React"
-  #         output_location: "dist"
-  #         app_build_command: "npm run build"
-  #         production_branch: 'master'
-  #         deployment_environment: "production"
-
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROUD_GLACIER_04FB3CF1E... }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          ###### THESE THREE LINES ARE THE KEY ######
+          app_location: "/AlertHub.React" # App source code path
+          api_location: ""                # Api source code path - optional
+          output_location: "dist"         # Built app content directory - relative to app_location
+          ###########################################
   # -----------------------------
   # WebAPI
   # -----------------------------
