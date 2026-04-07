@@ -22,10 +22,9 @@ var host = new HostBuilder()
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var connString = context.Configuration["Redis:ConnectionString"];
-
             var options = ConfigurationOptions.Parse(connString!);
-            options.AbortOnConnectFail = false;
 
+            options.AbortOnConnectFail = false;
             ThreadPool.SetMinThreads(200, 200);
 
             return ConnectionMultiplexer.Connect(options);
