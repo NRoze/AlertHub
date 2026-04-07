@@ -89,23 +89,46 @@ jobs:
     needs: changes
     if: needs.changes.outputs.function != ''
     runs-on: ubuntu-latest
+    name: Deploy Function App
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Publish and Deploy Function
+
+      - name: Publish Function
         run: |
-          dotnet publish ./AlertHub.Api/AlertHub.Api.csproj -c Release -o ./publish/FunctionApp
-          cd ./publish/FunctionApp && zip -r ../../FunctionApp.zip . && cd ../../
-          az functionapp deploy --resource-group alert-hub-rg --name alert-hub-api --src-path FunctionApp.zip --type zip
-          
-          
+          dotnet publish ./AlertHub.Api/AlertHub.Api.csproj \
+            -c Release \
+            -o ./publish/FunctionApp \
+            /p:AppSettingsFile=appsettings.function.json
+
+      - name: Zip Function
+        run: |
+          cd ./publish/FunctionApp
+          # Prevent WebAPI or extra DLL leakage
+          # Ensure host.json is at the root of this folder
+          zip -r ../../FunctionApp.zip .
+          cd ../../
+
+      - name: Deploy Function
+        run: |
+          az functionapp deploy \
+            --resource-group alert-hub-rg \
+            --name alert-hub-api \
+            --src-path FunctionApp.zip \
+            --type zip \
+            --async true
+
+
 # name: CD - Deploy Changed Apps on Tag
 
 # on:

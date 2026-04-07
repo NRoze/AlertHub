@@ -25,6 +25,7 @@ var host = new HostBuilder()
             var options = ConfigurationOptions.Parse(connString!);
 
             options.AbortOnConnectFail = false;
+
             ThreadPool.SetMinThreads(200, 200);
 
             return ConnectionMultiplexer.Connect(options);
