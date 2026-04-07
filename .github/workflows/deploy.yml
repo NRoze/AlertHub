@@ -111,20 +111,33 @@ jobs:
           zip -r ../../WebApi.zip .
           cd ../../
 
+      - name: Stop Web App (Prevents 502/File Locks)
+        run: az webapp stop --name alert-hub-webapi --resource-group alert-hub-rg
+
       - name: Deploy WebApi
         run: |
           az webapp deploy \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
             --src-path WebApi.zip \
-            --type zip
+            --type zip \
+            --timeout 600
 
       - name: Set startup command
         run: |
           az webapp config set \
             --resource-group alert-hub-rg \
             --name alert-hub-webapi \
-            --startup-file "dotnet AlertHub.WebApi.dll"
+            --startup-file "dotnet AlertHub.WebApi.dll" \
+            --linux-fx-version "DOTNET|10.0"
+            
+          az webapp update \
+            --resource-group alert-hub-rg \
+            --name alert-hub-webapi \
+            --https-only true
+
+      - name: Start Web App
+        run: az webapp start --name alert-hub-webapi --resource-group alert-hub-rg
 
   # -----------------------------
   # Function App
