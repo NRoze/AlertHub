@@ -32,19 +32,28 @@ public class AlertsController : ControllerBase
         Response.Headers.Append("Cache-Control", "no-cache");
         Response.Headers.Append("Connection", "keep-alive");
 
+        // IMPORTANT: Azure App Service needs an immediate flush to "open" the pipe
+        // and avoid the 504 Gateway Timeout.
+        await Response.WriteAsync("retry: 10000\n\n", cancellationToken);
+        await Response.Body.FlushAsync(cancellationToken);
+
         var subscriber = _redis.GetSubscriber();
-        var tcs = new TaskCompletionSource();
 
         await subscriber.SubscribeAsync(_redisOptions.AlertsChannel, async (channel, message) =>
         {
-            await HandleMessage(channel, message, cancellationToken);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await HandleMessage(channel, message, cancellationToken);
+            }
         });
 
         try
         {
-            await tcs.Task.WaitAsync(cancellationToken);
+            await Task.Delay(Timeout.Infinite, cancellationToken);
         }
         catch (OperationCanceledException)
+        { }
+        finally
         {
             await subscriber.UnsubscribeAsync(_redisOptions.AlertsChannel);
         }
