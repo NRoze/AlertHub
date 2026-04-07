@@ -51,4 +51,14 @@ app.UseCors("AllowReactApp");
 app.MapHealthChecks("/health");
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    // If you have a logger configured:
+    // Log.Fatal(ex, "Host terminated unexpectedly");
+    Console.WriteLine($"STARTUP_ERROR: {ex.Message}");
+    throw;
+}
