@@ -28,13 +28,14 @@ public class AlertsController : ControllerBase
     [HttpGet("sse")]
     public async Task GetSSE(CancellationToken cancellationToken)
     {
-        Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
+        Response.Headers.Append("Content-Type", "text/event-stream");
         Response.Headers.Append("Cache-Control", "no-cache");
         Response.Headers.Append("Connection", "keep-alive");
+        Response.Headers.Append("X-Accel-Buffering", "no");
 
         // IMPORTANT: Azure App Service needs an immediate flush to "open" the pipe
         // and avoid the 504 Gateway Timeout.
-        await Response.WriteAsync("retry: 10000\n\n", cancellationToken);
+        await Response.WriteAsync(": connected\n\n", cancellationToken);
         await Response.Body.FlushAsync(cancellationToken);
 
         var subscriber = _redis.GetSubscriber();
