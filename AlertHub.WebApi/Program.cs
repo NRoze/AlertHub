@@ -25,12 +25,13 @@ builder.Services.Configure<RedisOptions>(
 var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ?? 
     throw new ArgumentNullException("Redis connection string not found in appsettings.json");
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-{
-    var config = ConfigurationOptions.Parse(redisConnectionString);
-    config.AbortOnConnectFail = false;
-    return ConnectionMultiplexer.Connect(config);
-});
+var config = ConfigurationOptions.Parse(redisConnectionString);
+config.AbortOnConnectFail = false;
+config.ConnectRetry = 3;
+config.ConnectTimeout = 5000;
+
+var redis = ConnectionMultiplexer.Connect(config);
+builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
 builder.Services.AddHealthChecks()
     .AddRedis(redisConnectionString,
@@ -50,5 +51,4 @@ app.UseCors("AllowReactApp");
 app.MapHealthChecks("/health");
 app.MapControllers();
 
-app.MapGet("/", () => Results.Redirect("/health"));
 app.Run();
