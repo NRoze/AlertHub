@@ -28,16 +28,15 @@ jobs:
 
           # Get previous tag (safe)
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
           
           # Get list of changed files
           CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
 
           # Check for changes in each directory
           # We use -q (quiet) to just check if the pattern exists
-          echo "has_react=$(echo "$CHANGED" | grep -q '^AlertHub.React/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "has_webapi=$(echo "$CHANGED" | grep -q '^AlertHub.WebApi/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "has_function=$(echo "$CHANGED" | grep -q '^AlertHub.Api/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "react=$(echo "$CHANGED" | grep -q '^AlertHub.React/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "webapi=$(echo "$CHANGED" | grep -q '^AlertHub.WebApi/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "function=$(echo "$CHANGED" | grep -q '^AlertHub.Api/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
 
   # -----------------------------
   # React (Static Web App)
