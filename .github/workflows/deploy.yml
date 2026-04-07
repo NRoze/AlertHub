@@ -98,6 +98,7 @@ jobs:
           output_location: "dist"
           app_build_command: "npm run build"
           production_branch: 'master'
+          deployment_environment: "production"
 
   # -----------------------------
   # WebAPI
