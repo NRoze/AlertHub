@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
         policy.WithOrigins("http://localhost:5173",
-                           "https://proud-glacier-04fb3cf1e.1.azurestaticapps.net")
+                           "https://zealous-wave-0f5f18610.6.azurestaticapps.net/")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
