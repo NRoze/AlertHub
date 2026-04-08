@@ -32,6 +32,7 @@ export function useAlertsSSE(url: string): ActiveAlertLocation[] {
       try {
         const raw = parseSSEData(event.data);
         const alert = normalizeAlert(raw);
+
         dispatch({ type: "ADD_ALERT", payload: alert });
       } catch (err) {
         console.error("[useAlertsSSE] Failed to parse SSE message:", err);
@@ -40,6 +41,7 @@ export function useAlertsSSE(url: string): ActiveAlertLocation[] {
 
     eventSource.onerror = (err) => {
       // EventSource will auto-reconnect; log for visibility only.
+      //azurite --silent --location c:\azurite --debug c:\azurite\debug.log
       console.error("[useAlertsSSE] SSE connection error:", err);
     };
 

@@ -44,3 +44,11 @@ Following [Semantic Versioning](https://semver.org/).
 - Fixed azure and asp.net conflicts
 
 ---
+
+## [v0.6.0] – 2026-04-06
+***Architecture Change**
+- Deprecating Redis due to high cost
+- Deprecating WebApi for simplicity
+- Azure function will use signalR to push updates to the frontend
+
+---

@@ -19,8 +19,8 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-builder.Services.Configure<RedisOptions>(
-    builder.Configuration.GetSection("Redis"));
+//builder.Services.Configure<RedisOptions>(
+//    builder.Configuration.GetSection("Redis"));
 
 var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ?? 
     throw new ArgumentNullException("Redis connection string not found in appsettings.json");

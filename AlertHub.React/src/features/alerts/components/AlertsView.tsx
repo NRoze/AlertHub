@@ -1,5 +1,5 @@
 import React from "react";
-import { useAlertsSSE } from "../hooks/useAlertsSSE";
+import { useAlertsSignalR } from "../hooks/useAlertsSignalR";
 import { AlertsMap } from "./AlertsMap";
 import { config } from "../../../config/config";
 import "./AlertsView.css";
@@ -10,7 +10,7 @@ import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
  * Owns the SSE connection and distributes data to map + sidebar.
  */
 export const AlertsView: React.FC = () => {
-  const alerts = useAlertsSSE(config.alertsSseUrl);
+  const alerts = useAlertsSignalR(config.alertsApiBase);
 
   return (
     <div className="alerts-view">

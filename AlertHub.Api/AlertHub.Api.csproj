@@ -23,11 +23,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.51.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.14.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.3.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.SignalRService" Version="2.0.1" />
-		<PackageReference Include="StackExchange.Redis" Version="2.12.14" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
@@ -38,16 +38,16 @@
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</None>
 		<None Update="Samples\FinishedSample1.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Samples\FinishedSample2.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<None Update="Samples\FinishedSample3.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Samples\FinishedSample4.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Samples\FinishedSample3.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<None Update="Samples\FinishedSample2.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 

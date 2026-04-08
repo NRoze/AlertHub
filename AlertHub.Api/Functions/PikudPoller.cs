@@ -1,36 +1,22 @@
 using AlertHub.Api.Logging;
-using AlertHub.Api.Models;
-using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
-using System.Text.Json;
 
 namespace AlertHub.Api.Functions;
 
 internal sealed class PikudPoller
 {
     private readonly IPikudPollerService _pikudPollerService;
-    private readonly IAlertCache _alertCache;
-    private readonly ISubscriber _subscriber;
-    private readonly RedisOptions _redisOptions;
 
-    public PikudPoller(
-        IPikudPollerService pikudPollerService, 
-        IAlertCache alertCache, 
-        IConnectionMultiplexer multiplexer, 
-        IOptions<RedisOptions> redisOptions)
+    public PikudPoller(IPikudPollerService pikudPollerService)
     {
         _pikudPollerService = pikudPollerService;
-        _alertCache = alertCache;
-        _subscriber = multiplexer.GetSubscriber();
-        _redisOptions = redisOptions.Value;
     }
 
     [Function("PikudPoller")]
-    public async Task Run(
-        [TimerTrigger("%POLL_INTERVAL_CRON%")] TimerInfo timer, 
+    [SignalROutput(HubName = "alertsHub")]
+    public async Task<SignalRMessageAction?> Run(
+        [TimerTrigger("%POLL_INTERVAL_CRON%")] TimerInfo timer,
         FunctionContext context,
         CancellationToken cancellationToken)
     {
@@ -40,17 +26,13 @@ internal sealed class PikudPoller
         {
             var alerts = await _pikudPollerService
                 .GetAlertsAsJson(cancellationToken).ConfigureAwait(false);
+            
+            if (alerts?.Any() != true) return null;
 
-            foreach (var alert in alerts)
+            return new SignalRMessageAction("newAlert")
             {
-                var alertDto = JsonSerializer.Deserialize<AlertMessageDto>(alert)!;
-
-                if (await _alertCache.TryAddAsync(alertDto.Id, cancellationToken))
-                {
-                    logger.NewAlert(alertDto);
-                    await _subscriber.PublishAsync(_redisOptions.AlertsChannel, alert);
-                }
-            }
+                Arguments = [alerts]
+            };
         }
         catch (Exception ex)
         {

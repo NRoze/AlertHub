@@ -1,11 +1,9 @@
-//Trigger deploy
 using Microsoft.Extensions.Hosting;
 using AlertHub.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using AlertHub.Api.Options;
 using AlertHub.Api.Middleware;
-using StackExchange.Redis;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
@@ -20,17 +18,6 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-        {
-            var connString = context.Configuration["Redis:ConnectionString"];
-            var options = ConfigurationOptions.Parse(connString!);
-
-            options.AbortOnConnectFail = false;
-
-            ThreadPool.SetMinThreads(200, 200);
-            return ConnectionMultiplexer.Connect(options);
-        });
-
         services.AddHttpClient();
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));
@@ -39,14 +26,12 @@ var host = new HostBuilder()
 
         if (useSimulatedAlerts)
         {
-            services.AddScoped<IPikudPollerService, SimulatedPikudPollerService>();
+            services.AddSingleton<IPikudPollerService, SimulatedPikudPollerService>();
         }
         else
         {
-            services.AddScoped<IPikudPollerService, PikudPollerService>();
+            services.AddSingleton<IPikudPollerService, PikudPollerService>();
         }
-
-        services.AddScoped<IAlertCache, AlertCache>();
     })
     .Build();
 

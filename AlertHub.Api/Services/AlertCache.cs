@@ -1,34 +1,34 @@
 using AlertHub.Api.Models;
 using AlertHub.Api.Options;
 using Microsoft.Extensions.Options;
-using StackExchange.Redis;
+//using StackExchange.Redis;
 
 namespace AlertHub.Api.Services;
 
 internal sealed class AlertCache : IAlertCache
 {
-    private readonly IDatabase _db;
-    private readonly RedisOptions _options;
+    //private readonly IDatabase _db;
+    //private readonly RedisOptions _options;
 
-    private static readonly RedisValue AlertValue= new("1");
-    private static RedisKey AlertKey(string alertId) => new($"alert:{alertId}");
+    //private static readonly RedisValue AlertValue= new("1");
+    //private static RedisKey AlertKey(string alertId) => new($"alert:{alertId}");
 
-    public AlertCache(IConnectionMultiplexer multiplexer, IOptions<RedisOptions> options)
-    {
-        _db = multiplexer.GetDatabase();
-        _options = options.Value;
-    }
-    public async Task<bool> TryAddAsync(string alertId, CancellationToken ct = default)
-    {
-        ct.ThrowIfCancellationRequested();
+    //public AlertCache(IConnectionMultiplexer multiplexer, IOptions<RedisOptions> options)
+    //{
+    //    _db = multiplexer.GetDatabase();
+    //    _options = options.Value;
+    //}
+    //public async Task<bool> TryAddAsync(string alertId, CancellationToken ct = default)
+    //{
+    //    ct.ThrowIfCancellationRequested();
 
-        return await _db.StringSetAsync(
-            AlertKey(alertId),
-            AlertValue,
-            expiry: _options.AlertExpiry,
-            when: When.NotExists
-        );
-    }
+    //    return await _db.StringSetAsync(
+    //        AlertKey(alertId),
+    //        AlertValue,
+    //        expiry: _options.AlertExpiry,
+    //        when: When.NotExists
+    //    );
+    //}
 
 //    public async Task<bool> TryAddAsync(string alert, CancellationToken cancellationToken = default)
 //{

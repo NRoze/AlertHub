@@ -8,10 +8,11 @@ namespace AlertHub.Api.Services;
 
 internal class SimulatedPikudPollerService : IPikudPollerService
 {
+    private int _iteration = 0;
     public async Task<IReadOnlyList<string>> GetAlertsAsJson(CancellationToken cancellationToken)
     {
-        var random = Random.Shared.Next(1, 5);
-
-        return [await File.ReadAllTextAsync($"Samples/FinishedSample{random}.json", Encoding.UTF8, cancellationToken)];
+        Interlocked.Increment(ref _iteration);
+        return [await File.ReadAllTextAsync(
+            $"Samples/FinishedSample{(_iteration%3)+1}.json", Encoding.UTF8, cancellationToken)];
     }
 }
