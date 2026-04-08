@@ -28,7 +28,6 @@ var host = new HostBuilder()
             options.AbortOnConnectFail = false;
 
             ThreadPool.SetMinThreads(200, 200);
-
             return ConnectionMultiplexer.Connect(options);
         });
 

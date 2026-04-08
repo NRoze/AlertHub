@@ -26,15 +26,24 @@ jobs:
           BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
           CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
 
-          echo "webapi=$(echo "$CHANGED" | grep '^AlertHub.WebApi/' || true)" >> $GITHUB_OUTPUT
-          echo "function=$(echo "$CHANGED" | grep '^AlertHub.Api/' || true)" >> $GITHUB_OUTPUT
+          if echo "$CHANGED" | grep -q '^AlertHub.WebApi/'; then
+            echo "webapi=true" >> $GITHUB_OUTPUT
+          else
+            echo "webapi=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED" | grep -q '^AlertHub.Api/'; then
+            echo "function=true" >> $GITHUB_OUTPUT
+          else
+            echo "function=false" >> $GITHUB_OUTPUT
+          fi
 
   # -----------------------------
   # WebAPI
   # -----------------------------
   webapi:
     needs: changes
-    if: needs.changes.outputs.webapi != ''
+    if: needs.changes.outputs.webapi == 'true'
     runs-on: ubuntu-latest
     name: Deploy WebApi
 
@@ -87,7 +96,7 @@ jobs:
   # -----------------------------
   function:
     needs: changes
-    if: needs.changes.outputs.function != ''
+    if: needs.changes.outputs.function == 'true'
     runs-on: ubuntu-latest
     name: Deploy Function App
 

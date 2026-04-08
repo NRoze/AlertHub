@@ -1,29 +1,58 @@
-name: Azure Static Web Apps CI/CD
+name: CD - Deploy React App on Tag
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - master
+    tags:
+      - 'v*'
 
 jobs:
-  build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+  # -----------------------------
+  # Detect Changes (Same as WebApi/Function)
+  # -----------------------------
+  changes:
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    outputs:
+      react: ${{ steps.filter.outputs.react }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: filter
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
+          CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
+
+          # Trigger if React folder OR the Shared project changes (if React depends on it)
+          if echo "$CHANGED" | grep -qE '^AlertHub.React/'; then
+            echo "react=true" >> $GITHUB_OUTPUT
+          else
+            echo "react=false" >> $GITHUB_OUTPUT
+          fi
+
+  # -----------------------------
+  # Deploy React Job
+  # -----------------------------
+  build_and_deploy_job:
+    needs: changes
+    if: needs.changes.outputs.react == 'true'
+    runs-on: ubuntu-latest
+    name: Build and Deploy React
     permissions:
        id-token: write
        contents: read
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false
-      - name: Install OIDC Client from Core Package
+
+      - name: Install OIDC Client
         run: npm install @actions/core@1.6.0 @actions/http-client
+
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken
@@ -32,27 +61,14 @@ jobs:
                const coredemo = require('@actions/core')
                return await coredemo.getIDToken()
            result-encoding: string
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ZEALOUS_WAVE_0F5F18610 }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./AlertHub.React" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
+          app_location: "./AlertHub.React" 
+          api_location: "" 
+          output_location: "dist" 
           github_id_token: ${{ steps.idtoken.outputs.result }}
-          ###### End of Repository/Build Configurations ######
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          action: "close"
