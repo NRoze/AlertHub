@@ -26,11 +26,11 @@ jobs:
           BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
           CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
 
-          if echo "$CHANGED" | grep -q '^AlertHub.WebApi/'; then
-            echo "webapi=true" >> $GITHUB_OUTPUT
-          else
-            echo "webapi=false" >> $GITHUB_OUTPUT
-          fi
+          # if echo "$CHANGED" | grep -q '^AlertHub.WebApi/'; then
+          #   echo "webapi=true" >> $GITHUB_OUTPUT
+          # else
+          #   echo "webapi=false" >> $GITHUB_OUTPUT
+          # fi
 
           if echo "$CHANGED" | grep -q '^AlertHub.Api/'; then
             echo "function=true" >> $GITHUB_OUTPUT
@@ -41,55 +41,53 @@ jobs:
   # -----------------------------
   # WebAPI
   # -----------------------------
-  webapi:
-    needs: changes
-    if: needs.changes.outputs.webapi == 'true'
-    runs-on: ubuntu-latest
-    name: Deploy WebApi
+  # webapi:
+  #   needs: changes
+  #   if: needs.changes.outputs.webapi == 'true'
+  #   runs-on: ubuntu-latest
+  #   name: Deploy WebApi
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: '10.0.x'
 
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: Azure Login
+  #       uses: azure/login@v2
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Publish WebApi
-        run: |
-          dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj \
-            --configuration Release \
-            --output ./publish/WebApi \
-            --no-self-contained
+  #     - name: Publish WebApi
+  #       run: |
+  #         dotnet publish ./AlertHub.WebApi/AlertHub.WebApi.csproj \
+  #           --configuration Release \
+  #           --output ./publish/WebApi \
+  #           --no-self-contained
 
-      - name: Zip WebApi
-        run: |
-          cd ./publish/WebApi
-          # Clean out any "leakage" from the Function project
-          rm -f host.json functions.metadata worker.config.json
-          zip -r ../../WebApi.zip .
-          cd ../../
+  #     - name: Zip WebApi
+  #       run: |
+  #         cd ./publish/WebApi
+  #         rm -f host.json functions.metadata worker.config.json
+  #         zip -r ../../WebApi.zip .
+  #         cd ../../
 
-      - name: Deploy WebApi
-        run: |
-          az webapp deploy \
-            --resource-group alert-hub-rg \
-            --name alert-hub-webapi \
-            --src-path WebApi.zip \
-            --type zip \
-            --async true
+  #     - name: Deploy WebApi
+  #       run: |
+  #         az webapp deploy \
+  #           --resource-group alert-hub-rg \
+  #           --name alert-hub-webapi \
+  #           --src-path WebApi.zip \
+  #           --type zip \
+  #           --async true
 
-      - name: Set WebApi Startup Command
-        # This is critical. It tells Azure exactly which DLL to run.
-        run: |
-          az webapp config set \
-            --resource-group alert-hub-rg \
-            --name alert-hub-webapi \
-            --startup-file "dotnet AlertHub.WebApi.dll"
+  #     - name: Set WebApi Startup Command
+  #       run: |
+  #         az webapp config set \
+  #           --resource-group alert-hub-rg \
+  #           --name alert-hub-webapi \
+  #           --startup-file "dotnet AlertHub.WebApi.dll"
 
   # -----------------------------
   # Function App

@@ -1,5 +1,5 @@
-const alertsSseUrl = import.meta.env.VITE_ALERTS_SSE_URL;
-if (!alertsSseUrl) throw new Error("Missing VITE_ALERTS_SSE_URL");
+// const alertsSseUrl = import.meta.env.VITE_ALERTS_SSE_URL;
+// if (!alertsSseUrl) throw new Error("Missing VITE_ALERTS_SSE_URL");
 const alertsApiBase = import.meta.env.VITE_ALERTS_API_BASE_URL;
 if (!alertsApiBase) throw new Error("Missing VITE_ALERTS_API_BASE_URL");
 
