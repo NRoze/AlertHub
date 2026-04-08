@@ -1,16 +1,11 @@
 import { useEffect, useReducer } from "react";
 import * as signalR from "@microsoft/signalr";
-import type { AlertMessage } from "../model/AlertMessage";
-import { normalizeAlert } from "../services/normalizeAlert";
 import { alertsReducer, initialAlertsState } from "../store/alertsReducer";
 import type { ActiveAlertLocation } from "../model/ActiveAlertLocation";
+import type { AlertLocationDto } from "../model/AlertLocationDto";
+import { mapLocationsToActiveAlerts } from "../services/mappers/mapLocationsToActiveAlerts";
 
 const CLEAN_INTERVAL_MS = 5_000;
-
-function parseData(raw: string): AlertMessage {
-  const first = JSON.parse(raw);
-  return typeof first === "string" ? JSON.parse(first) : first;
-}
 
 export function useAlertsSignalR(baseUrl: string): ActiveAlertLocation[] {
   const [state, dispatch] = useReducer(alertsReducer, initialAlertsState);
@@ -32,15 +27,14 @@ export function useAlertsSignalR(baseUrl: string): ActiveAlertLocation[] {
         if (!isMounted) return;
 
         try {
-            const data = parseData(raw);
-            const alertsArray = Array.isArray(data) ? data : [data];
-
-            alertsArray.forEach((item) => {
-                if (!item || typeof item !== 'object') return;
-                dispatch({ type: "ADD_ALERT", payload: normalizeAlert(item) });
+            const rawList: AlertLocationDto[] = Array.isArray(raw) ? raw : [raw];
+            const alertLocations: ActiveAlertLocation[] = mapLocationsToActiveAlerts(rawList);
+            
+            alertLocations.forEach((item) => {
+                 dispatch({ type: "ADD_ALERT", payload: item });
         });
         } catch (err) {
-        console.error("[useAlertsSignalR] Parsing error:", err);
+            console.error("[useAlertsSignalR] Parsing error:", err);
         }
     });
 
@@ -75,3 +69,5 @@ export function useAlertsSignalR(baseUrl: string): ActiveAlertLocation[] {
 
   return Array.from(state.alerts.values());
 }
+
+

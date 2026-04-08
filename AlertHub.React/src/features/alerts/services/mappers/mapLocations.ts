@@ -16,3 +16,14 @@ export function mapLocations(names: string[]): Location[] {
 
   return result;
 }
+
+export function mapLocation(name: string): Location {
+  const loc = locationMap.get(name);
+  if (loc) {
+    return loc;
+  } else {
+    console.warn("Unknown location:", name);
+  }
+
+  return { name, lat: 0, lon: 0 };
+}

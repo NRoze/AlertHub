@@ -9,40 +9,25 @@ export type AlertsState = {
 
 export const initialAlertsState: AlertsState = { alerts: new Map() };
 
-function getLocationKey(location: Location): string {
-  return `${location.area ?? ""}:${location.name}`;
-}
-
-function addOrUpdateAlert(state: AlertsState, alert: Alert): AlertsState {
+function addOrUpdateAlert(state: AlertsState, alert: ActiveAlertLocation): AlertsState {
   if (alert.id == null) return state;
 
   const newMap = new Map(state.alerts);
+  const existing = newMap.get(alert.id);
 
-  alert.locations?.forEach((location) => {
-    const key = getLocationKey(location);
-    const existing = newMap.get(key);
-
-    if (existing) {
-      newMap.set(key, { ...existing, 
-        expiresAt: alert.expiresAt, 
-        alertType: alert.type,
-        message: alert.title});
-    } else {
-      newMap.set(key, {
-        id: location.name,
-        location,
-        alertType: alert.type,
-        recievedAt: alert.receivedAt,
-        expiresAt: alert.expiresAt,
-        message: alert.title
-      });
-    }
-  });
+  if (existing) {
+    newMap.set(alert.id, { ...existing, 
+      expiresAt: alert.expiresAt, 
+      type: alert.type,
+      message: alert.message});
+  } else {
+    newMap.set(alert.id, alert);
+  }
 
   return { alerts: newMap };
 }
 
-function handlePayload(state: AlertsState, alert: Alert): AlertsState {
+function handlePayload(state: AlertsState, alert: ActiveAlertLocation): AlertsState {
   switch (alert.type) {
     case "EVENT_ENDED":
     case "ROCKET_FIRE":

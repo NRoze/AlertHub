@@ -36,7 +36,7 @@ export const AlertsMap: React.FC<Props> = ({ alerts }) => {
 
 // Separate component so each marker memoizes its own icon independently
 const AlertMarker: React.FC<{ alert: ActiveAlertLocation }> = ({ alert }) => {
-  const icon = useMemo(() => createAlertIcon(alert.alertType), [alert.alertType]);
+  const icon = useMemo(() => createAlertIcon(alert.type), [alert.type]);
 
   return (
     <Marker
@@ -45,7 +45,7 @@ const AlertMarker: React.FC<{ alert: ActiveAlertLocation }> = ({ alert }) => {
     >
       <Popup className="alert-popup">
         <div className="alert-popup__header">
-          <span className="alert-popup__emoji">{alertTypeIconMap[alert.alertType]}</span>
+          <span className="alert-popup__emoji">{alertTypeIconMap[alert.type]}</span>
           <strong className="alert-popup__location">{alert.location.name}</strong>
         </div>
         <div className="alert-popup__message">{alert.message}</div>

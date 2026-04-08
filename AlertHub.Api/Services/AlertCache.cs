@@ -1,54 +1,67 @@
 using AlertHub.Api.Models;
 using AlertHub.Api.Options;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-//using StackExchange.Redis;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 
 namespace AlertHub.Api.Services;
 
 internal sealed class AlertCache : IAlertCache
 {
-    //private readonly IDatabase _db;
-    //private readonly RedisOptions _options;
+    private readonly IMemoryCache _cache;
+    private readonly CacheOptions _options;
 
-    //private static readonly RedisValue AlertValue= new("1");
-    //private static RedisKey AlertKey(string alertId) => new($"alert:{alertId}");
+    private readonly ConcurrentDictionary<string, byte> _activeKeys = new();
 
-    //public AlertCache(IConnectionMultiplexer multiplexer, IOptions<RedisOptions> options)
-    //{
-    //    _db = multiplexer.GetDatabase();
-    //    _options = options.Value;
-    //}
-    //public async Task<bool> TryAddAsync(string alertId, CancellationToken ct = default)
-    //{
-    //    ct.ThrowIfCancellationRequested();
+    public AlertCache(IMemoryCache cache, IOptions<CacheOptions> options)
+    {
+        _cache = cache;
+        _options = options.Value;
+    }
 
-    //    return await _db.StringSetAsync(
-    //        AlertKey(alertId),
-    //        AlertValue,
-    //        expiry: _options.AlertExpiry,
-    //        when: When.NotExists
-    //    );
-    //}
+    public bool TryAdd(AlertLocationDto alert)
+    {
+        if (_cache.TryGetValue(alert.Id, out _)) return false;
 
-//    public async Task<bool> TryAddAsync(string alert, CancellationToken cancellationToken = default)
-//{
-//        cancellationToken.ThrowIfCancellationRequested();
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(_options.AlertExpiry)
+            .RegisterPostEvictionCallback(OnEvicted);
 
-//        var added = await _db.SetAddAsync(CacheKey, alert);
+        _cache.Set(alert.Id, alert, cacheEntryOptions);
+        _activeKeys.TryAdd(alert.Id, 0);
 
-//        if (added)
-//        {
-//            await _db.KeyExpireAsync(CacheKey, TimeSpan.FromSeconds(30));
-//        }
+        return true;
+    }
 
-//        return added;
-//    }
+    public ImmutableArray<AlertLocationDto> GetAll()
+    {
+        var alerts = new List<AlertLocationDto>();
 
-    //public async Task TryAddRange(IReadOnlyList<string> alerts, CancellationToken cancellationToken = default)
-    //{
-    //    cancellationToken.ThrowIfCancellationRequested();
+        foreach (var key in _activeKeys.Keys)
+        {
+            if (_cache.TryGetValue(key, out AlertLocationDto? alert) && alert is not null)
+            {
+                alerts.Add(alert);
+            }
+        }
 
-    //    foreach (var alert in alerts)
-    //        await TryAddAsync(alert, cancellationToken);
-    //}
+        return [.. alerts];
+    }
+
+    private void OnEvicted(object key, object? value, EvictionReason reason, object? state)
+    {
+        if (key is string id)
+        {
+            _activeKeys.TryRemove(id, out _);
+        }
+    }
+
+    public void TryAddRange(ImmutableArray<AlertLocationDto> alerts)
+    {
+        foreach (var alert in alerts)
+        {
+            if (alert is not null) TryAdd(alert);
+        }
+    }
 }

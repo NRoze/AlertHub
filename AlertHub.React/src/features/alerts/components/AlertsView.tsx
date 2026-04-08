@@ -34,7 +34,7 @@ export const AlertsView: React.FC = () => {
             {alerts.map((alert) => (
               <li key={alert.id} className="sidebar__item">
                 <div className="sidebar__item-location">
-                  <span className="alert-popup__emoji">{alertTypeIconMap[alert.alertType]}</span>
+                  <span className="alert-popup__emoji">{alertTypeIconMap[alert.type]}</span>
                   {alert.location.name}
                 </div>
                 <div className="sidebar__item-recieved">

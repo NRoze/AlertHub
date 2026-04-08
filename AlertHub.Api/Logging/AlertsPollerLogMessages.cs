@@ -21,4 +21,11 @@ internal static partial class AlertsPollerLogMessages
     public static partial void LogScheduledExecution(this ILogger logger, DateTime? last, DateTime? next);
     public static void LogScheduledExecution(this ILogger logger, TimerInfo timer) =>
         LogScheduledExecution(logger, timer.ScheduleStatus?.Last, timer.ScheduleStatus?.Next);
+
+    [LoggerMessage(EventId = 103, Level = LogLevel.Information, 
+        Message = "Recieved empty payload")]
+    public static partial void EmptyPayload(this ILogger logger);
+    [LoggerMessage(EventId = 104, Level = LogLevel.Information, 
+        Message = "Recieved payload: {Alerts}")]
+    public static partial void LogPayload(this ILogger logger, IReadOnlyList<string> alerts);
 }

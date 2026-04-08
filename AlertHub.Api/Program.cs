@@ -18,6 +18,7 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
+        services.AddMemoryCache();
         services.AddHttpClient();
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));
@@ -32,6 +33,9 @@ var host = new HostBuilder()
         {
             services.AddSingleton<IPikudPollerService, PikudPollerService>();
         }
+
+        services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<IAlertCache, AlertCache>();
     })
     .Build();
 

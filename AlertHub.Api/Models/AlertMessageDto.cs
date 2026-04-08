@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 
 namespace AlertHub.Api.Models;
-
 public sealed class AlertMessageDto
 {
     [JsonPropertyName("id")]

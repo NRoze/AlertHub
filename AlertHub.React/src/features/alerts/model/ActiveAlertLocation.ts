@@ -3,7 +3,7 @@ import type { Location } from "./Location";
 
 export type ActiveAlertLocation = {
     location: Location;
-    alertType: AlertType;
+    type: AlertType;
     recievedAt: Date;
     expiresAt: Date;
     id: string;

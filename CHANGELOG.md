@@ -45,10 +45,19 @@ Following [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [v0.6.0] – 2026-04-06
+## [v0.6.0] – 2026-04-08
 ***Architecture Change**
 - Deprecating Redis due to high cost
 - Deprecating WebApi for simplicity
 - Azure function will use signalR to push updates to the frontend
+
+---
+
+## [v0.7.0] – 2026-04-08
+***Architecture Change**
+- Function app will use Azure SignalR Service to push updates to the frontend
+- Raw messages mapped to location DTO and managed in cache
+- Client recieves list of locations and map to active alerts
+- Client manage its own expiration for alerts
 
 ---

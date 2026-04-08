@@ -1,9 +1,13 @@
 using AlertHub.Api.Models;
+using System.Collections.Immutable;
 
 namespace AlertHub.Api.Services;
 
 public interface IAlertCache
 {
-    //Task<bool> TryAddAsync(string alertId, CancellationToken cancellationToken = default);
-    //Task TryAddRange(IReadOnlyList<string> alerts, CancellationToken cancellationToken = default);
+    bool TryAdd(AlertLocationDto alert);
+
+    void TryAddRange(ImmutableArray<AlertLocationDto> alerts);
+
+    ImmutableArray<AlertLocationDto> GetAll();
 }
