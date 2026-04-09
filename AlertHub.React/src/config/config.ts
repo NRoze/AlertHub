@@ -6,5 +6,4 @@ if (isNaN(alertsTtlMs)) {
   throw new Error("Invalid VITE_ACTIVE_ALERT_TTL_MS, must be a number");
 }
 
-
 export const config = { alertsApiBase, alertsTtlMs } as const;
