@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace AlertHub.Api.Services;
 
-internal sealed class PikudPollerService : IPikudPollerService
+public sealed class PikudPollerService : IPikudPollerService
 {
     private string? _lastEtag;
     private const string _dataPropertyName = "data";

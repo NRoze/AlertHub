@@ -1,9 +1,10 @@
-using System.Net;
 using AlertHub.Api.Options;
 using AlertHub.Api.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
+using System.Net;
 
 namespace AlertHub.Tests.Services;
 
@@ -12,7 +13,7 @@ public class PikudPollerServiceTests
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
     private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
     private readonly IOptions<PikudPollerOptions> _options;
-
+    private readonly Mock<ILogger<PikudPollerService>> _loggerMock = new Mock<ILogger<PikudPollerService>>();
     public PikudPollerServiceTests()
     {
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
@@ -43,7 +44,7 @@ public class PikudPollerServiceTests
             )
             .ReturnsAsync(responseMessage);
 
-        var service = new PikudPollerService(_httpClientFactoryMock.Object, _options);
+        var service = new PikudPollerService(_httpClientFactoryMock.Object, _options, _loggerMock.Object);
 
         // Act
         var result = await service.GetAlertsAsJson(CancellationToken.None);
@@ -72,7 +73,7 @@ public class PikudPollerServiceTests
             )
             .ReturnsAsync(responseMessage);
 
-        var service = new PikudPollerService(_httpClientFactoryMock.Object, _options);
+        var service = new PikudPollerService(_httpClientFactoryMock.Object, _options, _loggerMock.Object);
 
         // Act
         var result = await service.GetAlertsAsJson(CancellationToken.None);

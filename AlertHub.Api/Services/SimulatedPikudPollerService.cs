@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 
-internal class SimulatedPikudPollerService : IPikudPollerService
+public class SimulatedPikudPollerService : IPikudPollerService
 {
     private readonly string[] _samples = new string[4];
     private bool _isLoaded = false;
