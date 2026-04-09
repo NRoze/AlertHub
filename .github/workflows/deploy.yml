@@ -12,7 +12,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      webapi: ${{ steps.filter.outputs.webapi }}
+      # webapi: ${{ steps.filter.outputs.webapi }}
       function: ${{ steps.filter.outputs.function }}
     steps:
       - uses: actions/checkout@v4

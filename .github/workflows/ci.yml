@@ -7,7 +7,41 @@ on:
     branches: [ "master" ]
 
 jobs:
+  # -----------------------------
+  # Detect Changes
+  # -----------------------------
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      react: ${{ steps.filter.outputs.react }}
+      function: ${{ steps.filter.outputs.function }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: filter
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
+          CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
+
+          if echo "$CHANGED" | grep -q '^AlertHub.React/'; then
+            echo "react=true" >> $GITHUB_OUTPUT
+          else
+            echo "react=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED" | grep -q '^AlertHub.Api/'; then
+            echo "function=true" >> $GITHUB_OUTPUT
+          else
+            echo "function=false" >> $GITHUB_OUTPUT
+          fi
+  
   build-and-test-backend:
+    needs: changes
+    if: needs.changes.outputs.function == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +62,8 @@ jobs:
       run: dotnet test AlertHub.slnx --no-build --verbosity normal
 
   verify-build-frontend:
+    needs: changes
+    if: needs.changes.outputs.react == 'true'
     runs-on: ubuntu-latest
 
     steps:

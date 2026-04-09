@@ -1,59 +1,37 @@
-﻿using System.Collections.Immutable;
+﻿using AlertHub.Api.Services;
 using System.Diagnostics;
 using System.Text;
 
-namespace AlertHub.Api.Services;
-
 internal class SimulatedPikudPollerService : IPikudPollerService
 {
-    private const int fileCount = 4;
+    private readonly string[] _samples = new string[4];
+    private bool _isLoaded = false;
+    private static readonly Stopwatch _globalTimer = Stopwatch.StartNew();
 
-    private static ImmutableList<string> _samples = [];
-    private static readonly Lock _lock = new();
-
-    private readonly Stopwatch _stopwatch = new();
-    private bool _initialized = false;
-
-    private async Task Initialize(CancellationToken cancellationToken)
-    { 
-        if (_initialized) return;
-
-        lock (_lock)
-        {
-            if (_initialized) return;
-
-            var tempSamples = new List<string>();
-            for (int i = 1; i <= fileCount; i++)
-            {
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Samples/FinishedSample{i}.json");
-                tempSamples.Add(File.ReadAllText(path, Encoding.UTF8));
-            }
-
-            _samples = [.. tempSamples];
-            _stopwatch.Restart();
-            _initialized = true;
-        }
-    }
-    public async Task<IReadOnlyList<string>> GetAlertsAsJson(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<string>> GetAlertsAsJson(CancellationToken ct)
     {
-        await Initialize(cancellationToken);
+        if (!_isLoaded) LoadFiles();
 
-        string selectedSample = _stopwatch.Elapsed switch
+        double elapsed = _globalTimer.Elapsed.TotalSeconds % 60; 
+        string selected = elapsed switch
         {
-            { TotalSeconds: < 15 } => _samples[0],
-            { TotalSeconds: < 25 } => _samples[1],
-            { TotalSeconds: < 35 } => _samples[2],
-            { TotalSeconds: < 40 } => _samples[3],
-            { TotalSeconds: < 50 } => string.Empty,
-            _ => "reset"
+            < 10 => _samples[0],
+            < 20 => _samples[1],
+            < 30 => _samples[2],
+            < 40 => _samples[3],
+            _ => string.Empty 
         };
 
-        if (string.Equals(selectedSample, "reset"))
-        { 
-            _stopwatch.Restart();
-            return [];
-        }
+        return string.IsNullOrEmpty(selected) ? [] : [selected];
+    }
 
-        return [selectedSample];
+    private void LoadFiles()
+    {
+        for (int i = 1; i <= 4; i++)
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Samples/FinishedSample{i}.json");
+            _samples[i - 1] = File.ReadAllText(path, Encoding.UTF8);
+        }
+        _isLoaded = true;
     }
 }
