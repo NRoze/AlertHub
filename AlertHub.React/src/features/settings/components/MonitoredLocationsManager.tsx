@@ -7,7 +7,6 @@ import "./MonitoredLocationsManager.css";
 import { alertTypeIconMap } from '../../alerts/services/constants/alertTypeIconMap';
 import type { ActiveAlertLocation } from '../../shared/model/ActiveAlertLocation';
 import { getTitleByType } from '../../alerts/services/constants/alertTitleMap';
-import { getTimeoutByType } from '../types/settings.types';
 
 interface Props {
   alerts: ActiveAlertLocation[];
