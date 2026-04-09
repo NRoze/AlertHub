@@ -6,6 +6,8 @@ namespace AlertHub.Api.Services;
 
 internal class SimulatedPikudPollerService : IPikudPollerService
 {
+    private const int fileCount = 4;
+
     private static ImmutableList<string> _samples = [];
     private static readonly Lock _lock = new();
 
@@ -21,7 +23,7 @@ internal class SimulatedPikudPollerService : IPikudPollerService
             if (_initialized) return;
 
             var tempSamples = new List<string>();
-            for (int i = 1; i <= 3; i++)
+            for (int i = 1; i <= fileCount; i++)
             {
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Samples/FinishedSample{i}.json");
                 tempSamples.Add(File.ReadAllText(path, Encoding.UTF8));
@@ -38,15 +40,17 @@ internal class SimulatedPikudPollerService : IPikudPollerService
 
         string selectedSample = _stopwatch.Elapsed switch
         {
-            { TotalSeconds: < 10 } => _samples[0],
-            { TotalSeconds: < 20 } => _samples[1],
-            { TotalSeconds: < 30 } => _samples[2],
-            _ => string.Empty
+            { TotalSeconds: < 5 } => _samples[0],
+            { TotalSeconds: < 10 } => _samples[1],
+            { TotalSeconds: < 15 } => _samples[2],
+            { TotalSeconds: < 20 } => _samples[3],
+            { TotalSeconds: < 25 } => string.Empty,
+            _ => "reset"
         };
 
-        if (string.IsNullOrWhiteSpace(selectedSample))
-        {
-            //_stopwatch.Restart();
+        if (string.Equals(selectedSample, "reset"))
+        { 
+            _stopwatch.Restart();
             return [];
         }
 

@@ -14,7 +14,10 @@ function addOrUpdateAlert(state: AlertsState, alert: ActiveAlertLocation): Alert
   const existing = newMap.get(alert.id);
 
   if (existing) {
+    const recievedAt = existing.type === alert.type ? existing.recievedAt : alert.recievedAt;
+
     newMap.set(alert.id, { ...existing, 
+      recievedAt: recievedAt,
       expiresAt: alert.expiresAt, 
       type: alert.type,
       message: alert.message});
