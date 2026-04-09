@@ -49,7 +49,7 @@
 //       eventSource.close();
 //       clearInterval(cleanupInterval);
 //     };
-//   }, [url]); 
+//   }, [url]);
 
 //   return Array.from(state.alerts.values());
 // }

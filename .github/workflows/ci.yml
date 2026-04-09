@@ -23,9 +23,7 @@ jobs:
       - name: Detect changed files
         id: filter
         run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          BASE=${PREV_TAG:-$(git rev-list --max-parents=0 HEAD)}
-          CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
 
           if echo "$CHANGED" | grep -q '^AlertHub.React/'; then
             echo "react=true" >> $GITHUB_OUTPUT
