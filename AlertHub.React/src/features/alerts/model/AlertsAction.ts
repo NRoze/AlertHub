@@ -1,4 +1,4 @@
-import type { ActiveAlertLocation } from "./ActiveAlertLocation";
+import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
 
 export type AlertsAction =
   | { type: "ADD_ALERT"; payload: ActiveAlertLocation }

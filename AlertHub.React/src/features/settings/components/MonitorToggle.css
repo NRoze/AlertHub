@@ -1,0 +1,24 @@
+.monitor-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 1px 0px 0px 0px;
+  display: inline-flex;
+  line-height: 1;
+  margin-inline-start: auto;
+}
+
+.monitor-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.monitor-toggle.is-monitored {
+  /* Subtle glow for monitored locations */
+  filter: drop-shadow(0 0 2px rgba(0, 123, 255, 0.5));
+}
+
+.monitor-toggle:active {
+  transform: scale(0.95);
+}

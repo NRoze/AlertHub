@@ -1,4 +1,4 @@
-import { AlertType } from "../../model/AlertType";
+import { AlertType } from "../../../shared/model/AlertType";
 import { titleToTypeMap } from "../constants/alertTitleMap";
 
 export function mapTitleToAlertType(title: string): AlertType {

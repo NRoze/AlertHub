@@ -1,6 +1,4 @@
-import type { Alert } from "../model/Alert";
-import type { ActiveAlertLocation } from "../model/ActiveAlertLocation";
-import type { Location } from "../model/Location";
+import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
 import type { AlertsAction } from "../model/AlertsAction";
 
 export type AlertsState = {

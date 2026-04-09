@@ -41,7 +41,7 @@ internal class SimulatedPikudPollerService : IPikudPollerService
             { TotalSeconds: < 10 } => _samples[0],
             { TotalSeconds: < 20 } => _samples[1],
             { TotalSeconds: < 30 } => _samples[2],
-            _ => _samples[2]
+            _ => string.Empty
         };
 
         if (string.IsNullOrWhiteSpace(selectedSample))

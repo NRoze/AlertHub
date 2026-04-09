@@ -1,6 +1,6 @@
 import L from "leaflet";
 import { alertTypeLineColorMap, alertTypeIconMap } from "../services/constants/alertTypeIconMap";
-import { AlertType } from "../model/AlertType";
+import { AlertType } from "../../shared/model/AlertType";
 
 export const createAlertIcon = (type: AlertType) => {
   const emoji = alertTypeIconMap[type];

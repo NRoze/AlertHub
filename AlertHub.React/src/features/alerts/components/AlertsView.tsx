@@ -4,6 +4,8 @@ import { AlertsMap } from "./AlertsMap";
 import { config } from "../../../config/config";
 import "./AlertsView.css";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
+import { MonitorToggle } from "../../settings/components/MonitorToggle";
+import { MonitoredManager } from "../../settings/components/MonitoredManager";
 
 /**
  * Top-level alerts feature component.
@@ -14,6 +16,9 @@ export const AlertsView: React.FC = () => {
 
   return (
     <div className="alerts-view">
+      <div className="alerts-view__settings">
+            <MonitoredManager alerts={alerts}  />
+      </div>
       <div className="alerts-view__map">
         <AlertsMap alerts={alerts} />
       </div>
@@ -36,6 +41,7 @@ export const AlertsView: React.FC = () => {
                 <div className="sidebar__item-location">
                   <span className="alert-popup__emoji">{alertTypeIconMap[alert.type]}</span>
                   {alert.location.name}
+                  <MonitorToggle activeAlert={{...alert}}/>
                 </div>
                 <div className="sidebar__item-recieved">
                   Since {alert.recievedAt.toLocaleTimeString()}

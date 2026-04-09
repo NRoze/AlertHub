@@ -69,8 +69,9 @@
 }
 
 .alert-popup__emoji {
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1;
+  padding: 0px 2px;
 }
 
 .alert-popup__type {
@@ -82,8 +83,8 @@
 }
 
 .alert-popup__location {
-  padding: 8px 14px 2px;
-  font-size: 14px;
+  padding: 0px 2px;
+  font-size: 16px;
   font-weight: 500;
   color: #f9fafb;
 }

@@ -1,5 +1,5 @@
 import { config } from "../../../../config/config";
-import type { ActiveAlertLocation } from "../../model/ActiveAlertLocation";
+import type { ActiveAlertLocation } from "../../../shared/model/ActiveAlertLocation";
 import type { AlertLocationDto } from "../../model/AlertLocationDto";
 import { mapLocation } from "./mapLocations";
 import { mapTitleToAlertType } from "./mapTitleToAlertType";
@@ -11,10 +11,10 @@ export function mapLocationsToActiveAlerts(dtos: AlertLocationDto[]): ActiveAler
         return {
             id: dto.Id,
             location: mapLocation(dto.Id),
-            message: dto.Title,
             type: mapTitleToAlertType(dto.Title),
             recievedAt: receivedAtDate, 
-            expiresAt: new Date(receivedAtDate.getTime() + config.alertsTtlMs)
-        };
+            expiresAt: new Date(receivedAtDate.getTime() + config.alertsTtlMs),
+            message: dto.Title
+        } as ActiveAlertLocation;
     });
 }

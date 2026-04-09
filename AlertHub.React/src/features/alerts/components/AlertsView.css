@@ -106,7 +106,7 @@
   font-family: var(--mono);
 }
 
-.sidebar__item-location {
+.sidebar__item-location {display: flex;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-h);
@@ -130,6 +130,11 @@
   .alerts-view {
     flex-direction: column;
     height: auto;
+  }
+
+  .alerts-view__settings {
+    height: 55svh;
+    padding: 12px;
   }
 
   .alerts-view__map {

@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import type { ActiveAlertLocation } from "../model/ActiveAlertLocation";
 import { createAlertIcon } from "../utils/createAlertIcon";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
 import "./AlertsMap.css";
+import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
+import { MonitorToggle } from "../../settings/components/MonitorToggle";
 
 // Israel geographic center + sensible zoom
 const ISRAEL_CENTER: [number, number] = [31.5, 34.9];
@@ -47,6 +48,7 @@ const AlertMarker: React.FC<{ alert: ActiveAlertLocation }> = ({ alert }) => {
         <div className="alert-popup__header">
           <span className="alert-popup__emoji">{alertTypeIconMap[alert.type]}</span>
           <strong className="alert-popup__location">{alert.location.name}</strong>
+          <MonitorToggle activeAlert={{...alert}} />
         </div>
         <div className="alert-popup__message">{alert.message}</div>
         <div className="alert-popup__since">

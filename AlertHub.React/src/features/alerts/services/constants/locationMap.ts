@@ -1,5 +1,5 @@
-import locationJsonRaw from "../../data/israelLocations.json";
-import type { Location } from "../../model/Location";
+import locationJsonRaw from "../../../shared/data/israelLocations.json";
+import type { Location } from "../../../shared/model/Location";
 
 type LocationCoordinates = { lat: number; long: number };
 type AreaLocations = Record<string, LocationCoordinates>;

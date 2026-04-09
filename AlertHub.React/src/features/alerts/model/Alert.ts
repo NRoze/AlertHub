@@ -1,5 +1,5 @@
-import type { AlertType } from "./AlertType";
-import type { Location } from "./Location";
+import type { AlertType } from "../../shared/model/AlertType";
+import type { Location } from "../../shared/model/Location";
 
 export type Alert = {
   id: string;

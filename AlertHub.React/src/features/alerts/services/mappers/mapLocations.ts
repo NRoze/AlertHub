@@ -1,4 +1,4 @@
-import type { Location } from "../../model/Location";
+import type { Location } from "../../../shared/model/Location";
 import { locationMap } from "../constants/locationMap";
 
 export function mapLocations(names: string[]): Location[] {

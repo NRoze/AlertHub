@@ -61,3 +61,11 @@ Following [Semantic Versioning](https://semver.org/).
 - Client manage its own expiration for alerts
 
 ---
+
+## [v0.8.0] – 2026-04-09
+***Features**
+- Monitoring locations, saved in local storage
+- List of monitored locations + auto complete search
+- Toggle button for monitoring
+
+---

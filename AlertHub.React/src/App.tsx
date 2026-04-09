@@ -1,4 +1,5 @@
 import { AlertsView } from "./features/alerts/components/AlertsView";
+import { SettingsProvider } from "./features/settings/context/SettingsContext";
 
 function App() {
   return (
@@ -8,7 +9,11 @@ function App() {
         <span className="app-header__subtitle">Israel Real-Time Alert Map</span>
       </header>
       <main className="app-main">
-        <AlertsView />
+        <SettingsProvider>
+          <div className="app">
+            <AlertsView />
+          </div>
+        </SettingsProvider>
       </main>
     </div>
   );

@@ -1,0 +1,89 @@
+/* ─── Search Box Refinement ────────────────────────────────────────── */
+.sidebar__search-container {
+  padding: 12px 16px; /* Match sidebar side padding */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.sidebar__search-input {
+  width: 100%; /* Stretch to fill container */
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--accent-bg); /* Use site's subtle accent bg */
+  color: var(--text-h);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sidebar__search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.1);
+}
+
+/* ─── List Cleaning ────────────────────────────────────────────────── */
+.sidebar__list-clean {
+  list-style: none; /* Removes the dots/circles */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.sidebar__item--stretch {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 20px; /* Aligns with your Title padding */
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar__item-location {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  direction: rtl; /* Ensure Hebrew flow */
+}
+
+.sidebar__item-location-text {
+  flex-grow: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+  margin: 0 8px;
+}
+
+/* ─── Suggestions Overlay ──────────────────────────────────────────── */
+.sidebar__suggestions {
+  list-style: none; /* Remove dots */
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sidebar__suggestions li {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  direction: rtl;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar__suggestions li:hover {
+  background: var(--accent-bg);
+}

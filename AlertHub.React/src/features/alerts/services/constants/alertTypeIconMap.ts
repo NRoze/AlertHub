@@ -1,6 +1,7 @@
-import { AlertType } from "../../model/AlertType";
+import { AlertType } from "../../../shared/model/AlertType";
 
 export const alertTypeIconMap: Record<AlertType, string> = {
+  [AlertType.NO_ALERTS]: "✅",
   [AlertType.ROCKET_FIRE]: "🚀",
   [AlertType.UAV_INTRUSION]: "🛸",
   [AlertType.INFILTRATION]: "⚠️",
@@ -11,6 +12,7 @@ export const alertTypeIconMap: Record<AlertType, string> = {
 
 
 export const alertTypeLineColorMap: Record<AlertType, string> = {
+  [AlertType.NO_ALERTS]: "black",
   [AlertType.ROCKET_FIRE]: "black",
   [AlertType.UAV_INTRUSION]: "black",
   [AlertType.INFILTRATION]: "black",
