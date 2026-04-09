@@ -41,7 +41,7 @@ internal sealed class PikudPoller
             if (alerts?.Any() != true)
             {
                 logger.EmptyPayload();
-                return null;
+                return new SignalRMessageAction("ping") { Arguments = ["heartbeat"] };
             }
 
             if (logger.IsEnabled(LogLevel.Information))
