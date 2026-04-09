@@ -23,20 +23,29 @@ internal sealed class PikudPollerService : IPikudPollerService
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Referrer = new Uri("https://www.oref.org.il/");
         client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
-        
+
+        // Add User-Agent; Pikud HaOref sometimes blocks empty UAs
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+
         var response = await client.GetAsync(_pikudApiUrl, cancellationToken);
+
+        // 204 No Content is common when there are no alerts
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent) return [];
+
         response.EnsureSuccessStatusCode();
 
-        var rawJson = await response.Content.ReadAsStringAsync(cancellationToken);
-        rawJson = rawJson.Trim('\uFEFF', ' ');
+        var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(rawJson)) return [];
+        if (bytes.Length == 0) return [];
 
-        using var json = JsonDocument.Parse(rawJson);
+        // JsonDocument.Parse handles UTF-8, UTF-16, and BOM automatically
+        using var json = JsonDocument.Parse(bytes);
 
         if (!json.RootElement.TryGetProperty(_dataPropertyName, out var data))
             return [];
 
-        return [.. data.EnumerateArray().Select(a => a.GetString() ?? string.Empty)];
+        return [.. data.EnumerateArray()
+                   .Select(a => a.GetString() ?? string.Empty)
+                   .Where(s => !string.IsNullOrWhiteSpace(s))];
     }
 }
