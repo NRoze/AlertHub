@@ -1,9 +1,10 @@
-using Microsoft.Extensions.Hosting;
-using AlertHub.Api.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using AlertHub.Api.Options;
 using AlertHub.Api.Middleware;
+using AlertHub.Api.Options;
+using AlertHub.Api.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Net;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(workerOptions =>
@@ -19,7 +20,13 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         services.AddMemoryCache();
-        services.AddHttpClient();
+        services.AddHttpClient("PikudClient")
+        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            UseCookies = true,
+            CookieContainer = new CookieContainer(),
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+        }); ;
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));
         
