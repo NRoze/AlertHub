@@ -40,11 +40,11 @@ internal class SimulatedPikudPollerService : IPikudPollerService
 
         string selectedSample = _stopwatch.Elapsed switch
         {
-            { TotalSeconds: < 5 } => _samples[0],
-            { TotalSeconds: < 10 } => _samples[1],
-            { TotalSeconds: < 15 } => _samples[2],
-            { TotalSeconds: < 20 } => _samples[3],
-            { TotalSeconds: < 25 } => string.Empty,
+            { TotalSeconds: < 15 } => _samples[0],
+            { TotalSeconds: < 25 } => _samples[1],
+            { TotalSeconds: < 35 } => _samples[2],
+            { TotalSeconds: < 40 } => _samples[3],
+            { TotalSeconds: < 50 } => string.Empty,
             _ => "reset"
         };
 
