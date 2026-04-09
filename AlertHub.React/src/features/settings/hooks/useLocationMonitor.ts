@@ -7,7 +7,6 @@ const STORAGE_KEY = 'monitored_locations_v1';
 export const useLocationMonitor = (activeAlerts: ActiveAlertLocation[]) => {
   const [selectedLocations, setSelectedLocations] = useState<ActiveAlertLocation[]>([]);
 
-  // 1. LOAD: Only runs once on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     console.log("[Storage Read] Raw data from disk:", saved);
@@ -22,14 +21,12 @@ export const useLocationMonitor = (activeAlerts: ActiveAlertLocation[]) => {
     }
   }, []);
 
-  // 2. ADD: Manual execution
   const addLocation = useCallback((newEntry: ActiveAlertLocation) => {
     setSelectedLocations((prev) => {
       if (prev.some(m => m.id === newEntry.id)) return prev;
       
       const updated = [...prev, newEntry];
       
-      // IMMEDIATE DISK WRITE
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       console.log("[Storage Write] Saved to disk:", updated);
       
@@ -37,9 +34,7 @@ export const useLocationMonitor = (activeAlerts: ActiveAlertLocation[]) => {
     });
   }, []);
 
-  // 3. UI DISPLAY
   const displayList = useMemo(() => {
-    // If this list is empty but selectedLocations has items, the ID find is failing
     return selectedLocations.map((storedLoc) => {
       const active = activeAlerts.find((a) => String(a.id) === String(storedLoc.id));
       return active || {
