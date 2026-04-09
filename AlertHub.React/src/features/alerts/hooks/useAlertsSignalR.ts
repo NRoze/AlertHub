@@ -27,11 +27,14 @@ export function useAlertsSignalR(baseUrl: string) {
       .build();
 
     // How long the client waits for a server ping before giving up
-    connection.serverTimeoutInMilliseconds = 15000; // Default is 30s, try 15s
+    connection.serverTimeoutInMilliseconds = 60000; // Default is 30s
 
     // How often the client sends a ping to the server
     connection.keepAliveIntervalInMilliseconds = 7500;
 
+    connection.on("ping", () => {
+        console.debug("Heartbeat received"); 
+    });
     // --- Connection State Listeners ---
     connection.onreconnecting((error) => {
         console.log("[SignalR] Entering Reconnecting state");
