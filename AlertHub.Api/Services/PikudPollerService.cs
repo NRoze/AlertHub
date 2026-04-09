@@ -36,16 +36,22 @@ internal sealed class PikudPollerService : IPikudPollerService
 
         var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
 
-        if (bytes.Length == 0) return [];
+        if (bytes == null || bytes.Length <= 5) return [];
 
-        // JsonDocument.Parse handles UTF-8, UTF-16, and BOM automatically
-        using var json = JsonDocument.Parse(bytes);
+        try
+        {
+            using var json = JsonDocument.Parse(bytes);
 
-        if (!json.RootElement.TryGetProperty(_dataPropertyName, out var data))
+            if (!json.RootElement.TryGetProperty(_dataPropertyName, out var data))
+                return [];
+
+            return [.. data.EnumerateArray()
+                       .Select(a => a.GetString() ?? string.Empty)
+                       .Where(s => !string.IsNullOrWhiteSpace(s))];
+        }
+        catch (JsonException)
+        {
             return [];
-
-        return [.. data.EnumerateArray()
-                   .Select(a => a.GetString() ?? string.Empty)
-                   .Where(s => !string.IsNullOrWhiteSpace(s))];
+        }
     }
 }
