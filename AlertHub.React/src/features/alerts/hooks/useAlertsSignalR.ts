@@ -19,7 +19,7 @@ export function useAlertsSignalR(baseUrl: string) {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(baseUrl)
       .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: (retryContext) => {
+        nextRetryDelayInMilliseconds: (_) => {
           return RETRY_INTERVAL_MS; 
         },
       })
@@ -39,7 +39,7 @@ export function useAlertsSignalR(baseUrl: string) {
       console.warn("[SignalR] Connection lost. Reconnecting...", error);
     });
 
-    connection.onreconnected((connectionId) => {
+    connection.onreconnected((_) => {
         console.log("[SignalR] Back Online!");
         if (isMounted) setConnectionStatus("Connected"); // <--- CRITICAL
     });

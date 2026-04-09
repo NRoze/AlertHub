@@ -15,7 +15,7 @@ interface AlertsViewProps {
  * Top-level alerts feature component.
  * Owns the SSE connection and distributes data to map + sidebar.
  */
-export const AlertsView: React.FC<AlertsViewProps> = ({ alerts, connectionStatus }) => {
+export const AlertsView: React.FC<AlertsViewProps> = ({ alerts }) => {
 
   return (
     <div className="alerts-view">
