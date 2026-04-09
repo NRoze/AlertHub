@@ -8,7 +8,7 @@ public class SimulatedPikudPollerService : IPikudPollerService
     private bool _isLoaded = false;
     private static readonly Stopwatch _globalTimer = Stopwatch.StartNew();
 
-    public async Task<IReadOnlyList<string>> GetAlertsAsJson(CancellationToken ct)
+    public async Task<string> GetAlertsAsJson(CancellationToken ct)
     {
         if (!_isLoaded) LoadFiles();
 
@@ -22,7 +22,7 @@ public class SimulatedPikudPollerService : IPikudPollerService
             _ => string.Empty 
         };
 
-        return string.IsNullOrEmpty(selected) ? [] : [selected];
+        return string.IsNullOrEmpty(selected) ? string.Empty : selected;
     }
 
     private void LoadFiles()

@@ -35,20 +35,20 @@ internal sealed class PikudPoller
         
         try
         {
-            var alerts = await _pikudPollerService
+            var alert = await _pikudPollerService
                 .GetAlertsAsJson(cancellationToken).ConfigureAwait(false);
 
-            if (alerts?.Any() != true)
+            if (string.IsNullOrWhiteSpace(alert))
             {
                 logger.EmptyPayload();
                 return new SignalRMessageAction("ping") { Arguments = ["heartbeat"] };
             }
 
             if (logger.IsEnabled(LogLevel.Information))
-                logger.LogPayload(alerts);
+                logger.LogPayload([alert]);
 
-            var dtos = MapAlertLocations(alerts); 
-
+            var dtos = MapAlertLocations(alert) ?? [];
+            
             _alertCache.TryAddRange(dtos);
 
             return new SignalRMessageAction("newAlert")
@@ -62,26 +62,18 @@ internal sealed class PikudPoller
             throw;
         }
     }
-
-    private ImmutableArray<AlertLocationDto> MapAlertLocations(IReadOnlyList<string> alerts)
+    private ImmutableArray<AlertLocationDto>? MapAlertLocations(string alert)
     {
-        return alerts
-            .Where(alert => !string.IsNullOrWhiteSpace(alert))
-            .Select(alert => JsonSerializer.Deserialize<AlertMessageDto>(alert))
-            .SelectMany<AlertMessageDto?, AlertLocationDto>(messageDto =>
-            {
-                if (messageDto is null) return [];
-
-                var timestamp = messageDto.Timestamp > 0 ?
-                            DateTimeOffset.FromUnixTimeMilliseconds(messageDto.Timestamp) : 
+        var dto = JsonSerializer.Deserialize<AlertMessageDto>(alert);
+        var timestamp = dto?.Timestamp > 0 ?
+                            DateTimeOffset.FromUnixTimeMilliseconds(dto.Timestamp) :
                             _timeProvider.GetLocalNow();
 
-                return messageDto.Data.Select((locationStr) =>
-                    AlertLocationDto.Create(
-                        locationStr.Trim(),
-                        messageDto.Title.Trim(),
-                        messageDto.Desc.Trim(),
-                        timestamp));
-            }).ToImmutableArray();
+        return dto?.Data?.Select((locationStr) =>
+            AlertLocationDto.Create(
+                locationStr.Trim(),
+                dto.Title.Trim(),
+                dto.Desc.Trim(),
+                timestamp)).ToImmutableArray();
     }
 }

@@ -50,9 +50,7 @@ public class PikudPollerServiceTests
         var result = await service.GetAlertsAsJson(CancellationToken.None);
 
         // Assert
-        Assert.Equal(2, result.Count);
-        Assert.Equal("Alert 1", result[0]);
-        Assert.Equal("Alert 2", result[1]);
+        Assert.Equal("""{"data":["Alert 1","Alert 2"]}""", result);
     }
 
     [Fact]

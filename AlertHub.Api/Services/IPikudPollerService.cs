@@ -7,6 +7,6 @@ namespace AlertHub.Api.Services
 {
     public interface IPikudPollerService
     {
-        Task<IReadOnlyList<string>> GetAlertsAsJson(CancellationToken cancellationToken);
+        Task<string> GetAlertsAsJson(CancellationToken cancellationToken);
     }
 }
