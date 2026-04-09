@@ -69,3 +69,11 @@ Following [Semantic Versioning](https://semver.org/).
 - Toggle button for monitoring
 
 ---
+
+## [v0.9.0] – 2026-04-09
+***Features**
+- Connection status, display Live/Connecting/Reconnecting/Offline
+- Conditional CI 
+
+---
+
