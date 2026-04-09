@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { createAlertIcon } from "../utils/createAlertIcon";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
-import "./AlertsMap.css";
+import "./styles/AlertsMap.css";
 import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
 import { MonitorToggle } from "../../settings/components/MonitorToggle";
 

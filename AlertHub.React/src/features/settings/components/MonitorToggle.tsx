@@ -1,5 +1,5 @@
 import React from 'react';
-import "./MonitorToggle.css"
+import "./styles/MonitorToggle.css"
 import { useSettings } from '../context/SettingsContext';
 import type { MonitoredLocation } from '../model/MonitoredLocation.ts';
 

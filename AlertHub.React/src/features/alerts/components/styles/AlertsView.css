@@ -1,7 +1,7 @@
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 .alerts-view {
   display: flex;
-  height: calc(100vh - 80px); /* leave room for the app header */
+  height: calc(100vh - 60px); /* leave room for the app header */
   gap: 0;
   overflow: hidden;
 }
@@ -9,14 +9,13 @@
 .alerts-view__map {
   flex: 1 1 auto;
   min-width: 0;
-  padding: 16px;
+  padding: 0px;
   box-sizing: border-box;
 }
 
 /* ─── Sidebar ─────────────────────────────────────────────────────────────── */
 .alerts-view__sidebar {
-  width: 280px;
-  flex: 0 0 280px;
+  flex: 250px 0 250px;
   background: var(--bg);
   border-left: 1px solid var(--border);
   display: flex;
@@ -28,7 +27,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 20px 12px;
+  padding: 10px 20px 12px;
   margin: 0;
   font-size: 16px;
   font-weight: 600;
@@ -61,7 +60,7 @@
   flex: 1;
   color: var(--text);
   font-size: 14px;
-  padding: 40px 20px;
+  padding: 40px;
 }
 
 .sidebar__empty-icon {
@@ -73,7 +72,7 @@
 .sidebar__list {
   list-style: none;
   margin: 0;
-  padding: 8px 0;
+  padding: 2px 0;
   overflow-y: auto;
   flex: 1;
 }
@@ -133,13 +132,13 @@
   }
 
   .alerts-view__settings {
-    height: 55svh;
-    padding: 12px;
+    height: 35svh;
+    padding: 2px;
   }
 
   .alerts-view__map {
-    height: 55svh;
-    padding: 12px;
+    height: 75svh;
+    padding: 2px;
   }
 
   .alerts-view__sidebar {

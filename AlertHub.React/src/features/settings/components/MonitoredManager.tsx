@@ -6,7 +6,7 @@ import { allIsraelLocations } from '../../shared/utils/locationUtils'; // Moved 
 import { alertTypeIconMap } from '../../alerts/services/constants/alertTypeIconMap';
 import { AlertType } from '../../shared/model/AlertType';
 import type { ActiveAlertLocation } from '../../shared/model/ActiveAlertLocation';
-import "./MonitoredLocationsManager.css";
+import "./styles/MonitoredLocationsManager.css";
 import type { Location } from '../../shared/model/Location';
 
 export const MonitoredManager: React.FC<{ alerts: ActiveAlertLocation[] }> = ({ alerts }) => {

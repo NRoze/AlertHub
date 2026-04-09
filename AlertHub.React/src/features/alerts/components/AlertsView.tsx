@@ -1,5 +1,5 @@
 import React from "react";
-import "./AlertsView.css";
+import "./styles/AlertsView.css";
 import { AlertsMap } from "./AlertsMap";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
 import { MonitorToggle } from "../../settings/components/MonitorToggle";
