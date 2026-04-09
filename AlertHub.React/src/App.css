@@ -182,3 +182,34 @@
     border-right-color: var(--border);
   }
 }
+
+.app-header {
+  display: flex;
+  justify-content: space-between; /* Pushes title to left, status to right */
+  align-items: center;
+  padding: 0rem 1rem;
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.app-header__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Optional: subtle pulse for reconnecting state */
+.status--reconnecting {
+  animation: status-fade 1.5s infinite;
+}
+
+@keyframes status-fade {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}

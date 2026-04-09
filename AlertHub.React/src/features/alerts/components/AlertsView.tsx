@@ -1,18 +1,21 @@
 import React from "react";
-import { useAlertsSignalR } from "../hooks/useAlertsSignalR";
-import { AlertsMap } from "./AlertsMap";
-import { config } from "../../../config/config";
 import "./AlertsView.css";
+import { AlertsMap } from "./AlertsMap";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
 import { MonitorToggle } from "../../settings/components/MonitorToggle";
 import { MonitoredManager } from "../../settings/components/MonitoredManager";
+import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
+
+interface AlertsViewProps {
+  alerts: ActiveAlertLocation[];
+  connectionStatus: string;
+}
 
 /**
  * Top-level alerts feature component.
  * Owns the SSE connection and distributes data to map + sidebar.
  */
-export const AlertsView: React.FC = () => {
-  const alerts = useAlertsSignalR(config.alertsApiBase);
+export const AlertsView: React.FC<AlertsViewProps> = ({ alerts, connectionStatus }) => {
 
   return (
     <div className="alerts-view">
