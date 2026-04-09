@@ -27,6 +27,7 @@ var host = new HostBuilder()
             CookieContainer = new CookieContainer(),
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
         }); ;
+
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));
         
