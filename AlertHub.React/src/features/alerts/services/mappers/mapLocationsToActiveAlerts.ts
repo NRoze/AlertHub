@@ -6,7 +6,7 @@ import { mapTitleToAlertType } from "./mapTitleToAlertType";
 
 export function mapLocationsToActiveAlerts(dtos: AlertLocationDto[]): ActiveAlertLocation[] {
     return dtos.map(dto => {
-        const receivedAtDate = new Date(dto.Timestamp);
+        const receivedAtDate = new Date();
 
         return {
             id: dto.Id,

@@ -6,6 +6,7 @@ import { mapLocationsToActiveAlerts } from "../services/mappers/mapLocationsToAc
 
 const CLEAN_INTERVAL_MS = 5_000;
 const RETRY_INTERVAL_MS = 5_000;
+const getAlertsEndpoint = "alerts";
 
 export type ConnectionStatus = "Connecting" | "Connected" | "Reconnecting" | "Disconnected";
 
@@ -26,16 +27,12 @@ export function useAlertsSignalR(baseUrl: string) {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    // How long the client waits for a server ping before giving up
-    connection.serverTimeoutInMilliseconds = 60000; // Default is 30s
-
-    // How often the client sends a ping to the server
+    connection.serverTimeoutInMilliseconds = 60000; 
     connection.keepAliveIntervalInMilliseconds = 7500;
-
     connection.on("ping", () => {
         console.debug("Heartbeat received"); 
     });
-    // --- Connection State Listeners ---
+
     connection.onreconnecting((error) => {
         console.log("[SignalR] Entering Reconnecting state");
       if (isMounted) setConnectionStatus("Reconnecting");
@@ -44,7 +41,7 @@ export function useAlertsSignalR(baseUrl: string) {
 
     connection.onreconnected((_) => {
         console.log("[SignalR] Back Online!");
-        if (isMounted) setConnectionStatus("Connected"); // <--- CRITICAL
+        if (isMounted) setConnectionStatus("Connected"); 
     });
     
     connection.onclose((error) => {
@@ -52,18 +49,13 @@ export function useAlertsSignalR(baseUrl: string) {
       console.error("[SignalR] Connection closed.", error);
     });
 
-    // Handler defined outside so we can turn it off
     const handleNewAlert = (raw: any) => {
       if (!isMounted) return;
       try {
         const rawList: AlertLocationDto[] = Array.isArray(raw) ? raw : [raw];
         const alertLocations = mapLocationsToActiveAlerts(rawList);
         
-        // TBD: dispatch the whole list at once
-        // to avoid N re-renders. If not, keep the loop.
-        alertLocations.forEach((item) => {
-          dispatch({ type: "ADD_ALERT", payload: item });
-        });
+        dispatch({ type: "ADD_ALERTS", payload: alertLocations });
       } catch (err) {
         console.error("[useAlertsSignalR] Parsing error:", err);
       }
@@ -82,16 +74,33 @@ export function useAlertsSignalR(baseUrl: string) {
         if (isMounted) {
           setConnectionStatus("Connected");
           console.log("[useAlertsSignalR] Connected");
+          await fetchInitialAlerts();
         }
       } catch (err) {
         if (isMounted) {
           setConnectionStatus("Disconnected");
           console.error("[useAlertsSignalR] Start fail:", err);
-          // Manually trigger a retry here.
-          setTimeout(start, 5000);
+          setTimeout(start, RETRY_INTERVAL_MS);
         }
       }
     }
+
+    const fetchInitialAlerts = async () => {
+      try {
+        const response = await fetch(baseUrl + '/' + getAlertsEndpoint);
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data: AlertLocationDto[] = await response.json();
+        
+        if (isMounted && data.length > 0) {
+          console.log(`[useAlertsSignalR] Fetched ${data.length} initial alerts`);
+          handleNewAlert(data);
+        }
+      } catch (err) {
+        console.error("[useAlertsSignalR] Failed to fetch initial alerts:", err);
+      }
+    };
 
     start();
 

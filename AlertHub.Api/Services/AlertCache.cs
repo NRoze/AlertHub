@@ -1,6 +1,7 @@
 using AlertHub.Api.Models;
 using AlertHub.Api.Options;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -11,24 +12,24 @@ internal sealed class AlertCache : IAlertCache
 {
     private readonly IMemoryCache _cache;
     private readonly CacheOptions _options;
-
+    private readonly ILogger<AlertCache> _logger;
     private readonly ConcurrentDictionary<string, byte> _activeKeys = new();
-
-    public AlertCache(IMemoryCache cache, IOptions<CacheOptions> options)
+    private readonly MemoryCacheEntryOptions _cacheEntryOptions;
+    public AlertCache(IMemoryCache cache, IOptions<CacheOptions> options, ILogger<AlertCache> logger)
     {
         _cache = cache;
         _options = options.Value;
+        _logger = logger;
+        _cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(_options.AlertExpiry)
+            .RegisterPostEvictionCallback(OnEvicted);
     }
 
     public bool TryAdd(AlertLocationDto alert)
     {
         if (_cache.TryGetValue(alert.Id, out _)) return false;
 
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(_options.AlertExpiry)
-            .RegisterPostEvictionCallback(OnEvicted);
-
-        _cache.Set(alert.Id, alert, cacheEntryOptions);
+        _cache.Set(alert.Id, alert, _cacheEntryOptions);
         _activeKeys.TryAdd(alert.Id, 0);
 
         return true;
@@ -51,9 +52,12 @@ internal sealed class AlertCache : IAlertCache
 
     private void OnEvicted(object key, object? value, EvictionReason reason, object? state)
     {
-        if (key is string id)
+        if (reason is EvictionReason.Expired or EvictionReason.Removed or EvictionReason.Capacity)
         {
-            _activeKeys.TryRemove(id, out _);
+            if (key is string id)
+            {
+                _activeKeys.TryRemove(id, out _);
+            }
         }
     }
 

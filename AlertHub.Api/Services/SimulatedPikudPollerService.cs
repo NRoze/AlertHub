@@ -17,8 +17,8 @@ public class SimulatedPikudPollerService : IPikudPollerService
         {
             < 10 => _samples[0],
             < 20 => _samples[1],
-            < 30 => _samples[2],
-            < 40 => _samples[3],
+            < 40 => _samples[2],
+            < 55 => _samples[3],
             _ => string.Empty 
         };
 

@@ -7,42 +7,52 @@ export type AlertsState = {
 
 export const initialAlertsState: AlertsState = { alerts: new Map() };
 
-function addOrUpdateAlert(state: AlertsState, alert: ActiveAlertLocation): AlertsState {
-  if (alert.id == null) return state;
+function addOrUpdateAlerts(state: AlertsState, alerts: ActiveAlertLocation[]): AlertsState {
+  if (!alerts || alerts.length === 0) return state;
 
-  const newMap = new Map(state.alerts);
-  const existing = newMap.get(alert.id);
+  let newMap: Map<string, ActiveAlertLocation> | null = null;
 
-  if (existing) {
-    const recievedAt = existing.type === alert.type ? existing.recievedAt : alert.recievedAt;
+  for (let i = 0; i < alerts.length; i++) {
+    const alert = alerts[i];
+    if (!alert.id) continue;
 
-    newMap.set(alert.id, { ...existing, 
-      recievedAt: recievedAt,
-      expiresAt: alert.expiresAt, 
-      type: alert.type,
-      message: alert.message});
-  } else {
-    newMap.set(alert.id, alert);
+    const existing = (newMap || state.alerts).get(alert.id);
+    const isNew = !existing;
+    const hasChanged = existing && (
+      existing.expiresAt !== alert.expiresAt ||
+      existing.type !== alert.type ||
+      existing.message !== alert.message
+    );
+
+    if (isNew || hasChanged) {
+      if (!newMap) {
+        newMap = new Map(state.alerts);
+      }
+
+      if (existing) {
+        const recievedAt = existing.type === alert.type ? existing.recievedAt : alert.recievedAt;
+
+        newMap.set(alert.id, {
+          ...existing,
+          recievedAt,
+          expiresAt: alert.expiresAt,
+          type: alert.type,
+          message: alert.message
+        });
+      } else {
+        newMap.set(alert.id, alert);
+      }
+    }
   }
 
-  return { alerts: newMap };
+  return newMap ? { ...state, alerts: newMap } : state;
 }
 
-function handlePayload(state: AlertsState, alert: ActiveAlertLocation): AlertsState {
-  switch (alert.type) {
-    case "EVENT_ENDED":
-    case "ROCKET_FIRE":
-    case "PRE_ALERT":
-      return addOrUpdateAlert(state, alert);
-    default:
-      return state;
-  }
-}
 
 export function alertsReducer(state: AlertsState, action: AlertsAction): AlertsState {
   switch (action.type) {
-    case "ADD_ALERT":
-      return handlePayload(state, action.payload);
+    case "ADD_ALERTS":
+      return addOrUpdateAlerts(state, action.payload);
 
     case "CLEAN_EXPIRED": {
       const newMap = new Map(

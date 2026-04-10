@@ -2,5 +2,5 @@
 
 public class CacheOptions
 {
-    public TimeSpan AlertExpiry { get; set; } = TimeSpan.FromSeconds(30);
+    public TimeSpan AlertExpiry { get; set; } = TimeSpan.FromSeconds(60);
 }

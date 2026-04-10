@@ -21,12 +21,12 @@ var host = new HostBuilder()
     {
         services.AddMemoryCache();
         services.AddHttpClient("PikudClient")
-        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        {
-            UseCookies = true,
-            CookieContainer = new CookieContainer(),
-            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-        }); ;
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                UseCookies = true,
+                CookieContainer = new CookieContainer(),
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            });
 
         services.Configure<PikudPollerOptions>(
             context.Configuration.GetSection("PikudPoller"));

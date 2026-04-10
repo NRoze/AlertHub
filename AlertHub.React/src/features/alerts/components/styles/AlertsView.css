@@ -28,7 +28,6 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px 12px;
-  margin: 0;
   font-size: 16px;
   font-weight: 600;
   border-bottom: 1px solid var(--border);
@@ -39,7 +38,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
+  min-width: 20px;
   height: 24px;
   padding: 0 6px;
   background: var(--accent-bg);
@@ -141,11 +140,11 @@
     padding: 2px;
   }
 
-  .alerts-view__sidebar {
+  /* .alerts-view__sidebar {
     width: 100%;
     flex: 0 0 auto;
     max-height: 45svh;
     border-left: none;
     border-top: 1px solid var(--border);
-  }
+  } */
 }
