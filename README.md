@@ -8,7 +8,7 @@ The solution uses a streamlined, cloud-native architecture to ensure separation 
 
 - **`AlertHub.Api` (Azure Functions)**: The core serverless worker service. It contains background functions that continuously poll the Pikud HaOref API for new alerts. It processes incoming data, handles the caching, and broadcasts real-time events directly to clients via SignalR.
 - **`AlertHub.React` (Frontend)**: A modern Single Page Application built with Vite, React, and TypeScript. It utilizes SignalR to maintain a live WebSocket connection to the backend and renders alerts on an interactive map using `react-leaflet`. It also includes a robust location-monitoring and management sidebar.
-- **`AlertHub.Tests`**: Comprehensive test suite encompassing unit and integration coverage.
+- **`AlertHub.Tests`**: Test suite encompassing unit and integration coverage.
 
 ### 📉 Architecture Evolution (Historical Note)
 Previously, the solution included an `AlertHub.WebApi` component acting as a middle-tier service, along with a Redis cluster for distributed caching and an event bus, and auxiliary `Shared` and `Infrastructure` boundaries. These dependencies were deliberately **deprecated and removed** to drastically reduce cloud hosting costs and simplify the codebase, shifting the entire backend to a pure Serverless Azure Functions model.

@@ -85,3 +85,11 @@ Following [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v1.0.0-rc.1] – 2026-04-09
+**Release-Candidate**
+- Adjusted expiration from backend
+- Fixed missing tests
+- Improved UI adjustments
+
+---
+

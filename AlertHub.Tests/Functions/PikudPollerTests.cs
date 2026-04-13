@@ -1,8 +1,11 @@
 using AlertHub.Api.Functions;
 using AlertHub.Api.Models;
+using AlertHub.Api.Options;
 using AlertHub.Api.Services;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Text.Json;
 
@@ -14,6 +17,7 @@ public class PikudPollerTests
     private readonly Mock<IAlertCache> _cacheMock;
     private readonly Mock<TimeProvider> _timeProviderMock;
     private readonly Mock<FunctionContext> _contextMock;
+    private readonly IOptions<CacheOptions> _options;
 
     public PikudPollerTests()
     {
@@ -21,6 +25,7 @@ public class PikudPollerTests
         _cacheMock = new Mock<IAlertCache>();
         _timeProviderMock = new Mock<TimeProvider>();
         _contextMock = new Mock<FunctionContext>();
+        _options = new OptionsWrapper<CacheOptions>(new CacheOptions { AlertExpiry = TimeSpan.FromMinutes(5) });
 
         var services = new ServiceCollection();
         services.AddLogging();
@@ -34,7 +39,7 @@ public class PikudPollerTests
         _serviceMock.Setup(s => s.GetAlertsAsJson(It.IsAny<CancellationToken>()))
             .ReturnsAsync(string.Empty);
 
-        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _timeProviderMock.Object);
+        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _timeProviderMock.Object, _options);
         var timerInfo = new TimerInfo();
 
         var result = await poller.Run(timerInfo, _contextMock.Object, CancellationToken.None);
@@ -55,7 +60,7 @@ public class PikudPollerTests
         
         _cacheMock.Setup(c => c.TryAdd(It.IsAny<AlertMessageDto>())).Returns(true);
 
-        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _timeProviderMock.Object);
+        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _timeProviderMock.Object, _options);
         var timerInfo = new TimerInfo();
 
         var result = await poller.Run(timerInfo, _contextMock.Object, CancellationToken.None);
@@ -78,7 +83,7 @@ public class PikudPollerTests
         
         _cacheMock.Setup(c => c.TryAdd(It.IsAny<AlertMessageDto>())).Returns(false);
 
-        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _timeProviderMock.Object);
+        var poller = new PikudPoller(_serviceMock.Object, _cacheMock.Object, _timeProviderMock.Object, _options);
         var timerInfo = new TimerInfo();
 
         var result = await poller.Run(timerInfo, _contextMock.Object, CancellationToken.None);

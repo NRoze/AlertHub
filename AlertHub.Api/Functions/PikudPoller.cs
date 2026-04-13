@@ -1,14 +1,17 @@
 using AlertHub.Api.Logging;
 using AlertHub.Api.Models;
+using AlertHub.Api.Options;
 using AlertHub.Api.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace AlertHub.Api.Functions;
 
 internal sealed class PikudPoller
 {
+    private readonly CacheOptions _options;
     private readonly IPikudPollerService _pikudPollerService;
     private readonly IAlertCache _alertCache;
     private readonly TimeProvider _timeProvider;
@@ -16,11 +19,13 @@ internal sealed class PikudPoller
     public PikudPoller(
         IPikudPollerService pikudPollerService,
         IAlertCache alertCache,
-        TimeProvider timeProvider)
+        TimeProvider timeProvider,
+        IOptions<CacheOptions> options)
     {
         _pikudPollerService = pikudPollerService;
         _alertCache = alertCache;
         _timeProvider = timeProvider;
+        _options = options.Value;
     }
 
     [Function("PikudPoller")]
@@ -48,6 +53,8 @@ internal sealed class PikudPoller
 
             var dto = JsonSerializer.Deserialize<AlertMessageDto>(alert)!;
 
+            dto.Timestamp = dto.Timestamp > 0 ? dto.Timestamp : DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            dto.ExpiresAt = dto.Timestamp + (long)_options.AlertExpiry.TotalMilliseconds;
             if (_alertCache.TryAdd(dto!))
             {
                 return new SignalRMessageAction("newAlert")

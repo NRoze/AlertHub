@@ -15,5 +15,6 @@ public sealed class AlertMessageDto
     public string Desc { get; init; } = string.Empty;
     [JsonPropertyName("timestamp")]
     public long Timestamp { get; set; }
-    public long ExpireAt { get; set; }
+    [JsonPropertyName("expiresAt")]
+    public long ExpiresAt { get; set; }
 }

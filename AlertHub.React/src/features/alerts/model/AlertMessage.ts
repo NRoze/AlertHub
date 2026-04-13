@@ -5,5 +5,5 @@ export type AlertMessage = {
   data: string[];
   desc: string;
   timestamp: number;
-  expireAt: number;
+  expiresAt: number;
 };
