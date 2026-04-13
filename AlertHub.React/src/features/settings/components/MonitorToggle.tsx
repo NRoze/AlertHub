@@ -20,7 +20,7 @@ export const MonitorToggle: React.FC<MonitorToggleProps> = ({ activeAlert }) => 
           id: activeAlert.id,
           name: activeAlert.name,
           type: activeAlert.type,
-          recievedAt: activeAlert.recievedAt || new Date(),
+          receivedAt: activeAlert.receivedAt || new Date(),
           message: activeAlert.message || ''
         }];
 

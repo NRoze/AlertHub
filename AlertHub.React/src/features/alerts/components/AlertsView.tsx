@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import "./styles/AlertsView.css";
 import { AlertsMap } from "./AlertsMap";
 import { alertTypeIconMap, alertTypeMessageMap } from "../services/constants/alertTypeIconMap";
-import { MonitoredManager } from "../../settings/components/MonitoredManager";
+import { MonitoredManager } from "../../settings";
 import type { Alert } from "../model/Alert";
 import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
 

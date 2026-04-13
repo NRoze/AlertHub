@@ -105,20 +105,29 @@
   padding: 4px 14px 12px;
   font-size: 11px;
   color: #6b7280;
-}
-
-.emoji-marker {
-  position: relative;
+}/* Hide default Leaflet marker styling */
+.leaflet-marker-invisible {
+  background: transparent !important;
+  border: none !important;
+}.emoji-marker-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 12px; /* 50% of 24px original */
+  justify-content: flex-end; 
+  width: 20px;               /* MUST match iconSize[0] */
+  height: 30px;              /* MUST match iconSize[1] */
+  padding: 0;
+  margin: 0;
+}
+
+.emoji-marker__emoji {
+  font-size: 16px;           /* Smaller emoji for smaller container */
   line-height: 1;
-  color: black; /* default color, can override with class or style */
+  margin-bottom: -1px;
 }
 
 .emoji-marker__line {
-  width: 1px;       /* 50% of 2px original */
-  height: 5.5px;    /* 50% of 15px original */
-  background-color: currentColor; /* inherit emoji color */
+  width: 1.5px;
+  height: 8px;               /* Shorter line */
+  flex-shrink: 0;
 }

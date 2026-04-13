@@ -1,4 +1,5 @@
 import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
+import { AlertType } from "../../shared/model/AlertType";
 import type { Alert } from "../model/Alert";
 import type { AlertsAction } from "../model/AlertsAction";
 import { mapAlertsToActiveAlerts } from "../services/mappers/mapAlertsToActiveAlerts";
@@ -37,18 +38,22 @@ function addOrUpdateActiveAlerts(
       }
 
       if (existing) {
-        const recievedAt =
+        const receivedAt =
           existing.type === alert.type
-            ? existing.recievedAt
-            : alert.recievedAt;
+            ? existing.receivedAt
+            : alert.receivedAt;
+        const expiresAt =
+          existing.type === alert.type
+            ? existing.expiresAt
+            : alert.expiresAt;
 
         newMap.set(alert.name, {
           ...existing,
-          recievedAt,
-          expiresAt: alert.expiresAt,
+          receivedAt,
+          expiresAt,
           type: alert.type,
           message: alert.message,
-          location: alert.location, // ✅ ensure location stays updated
+          location: alert.location,
         });
       } else {
         newMap.set(alert.name, alert);
@@ -89,7 +94,7 @@ function addOrUpdateAlerts(
     activeAlerts
   );
 
-  if (newMap != state.alerts ||
+  if ((newMap && newMap !== state.alerts) ||
     activeAlertsMap !== state.activeLocations) {
     return {
       alerts: newMap ?? state.alerts,
@@ -115,13 +120,24 @@ export function alertsReducer(
         )
       );
 
-      const activeLocations = new Map(
-        Array.from(state.activeLocations.entries()).filter(
-          ([, alert]) => alert.expiresAt.getTime() > action.now
-        )
-      );
+      const activeLocations = Array.from(state.activeLocations.entries()).map(([id, alert]) => {
+        if (alert.expiresAt.getTime() <= action.now) {
+          return [
+            id,
+            {
+              ...alert,
+              type: AlertType.NO_ALERTS,
+            },
+          ] as [string, ActiveAlertLocation];
+        }
 
-      return { alerts, activeLocations };
+        return [id, alert] as [string, ActiveAlertLocation];
+      });
+
+      return {
+        alerts,
+        activeLocations: new Map(activeLocations),
+      };
     }
 
     default:

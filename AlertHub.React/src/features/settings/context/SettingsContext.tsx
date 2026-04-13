@@ -18,7 +18,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ...raw,
       monitoredLocations: (raw.monitoredLocations || []).map((loc: any) => ({
         ...loc,
-        recievedAt: new Date(loc.recievedAt),
+        receivedAt: new Date(loc.receivedAt),
       })),
     };
   };

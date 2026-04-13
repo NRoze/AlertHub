@@ -33,11 +33,11 @@ export const DEFAULT_SETTINGS: UserSettings = {
   version: 1,
   monitoredLocations: [],
   alertTimeouts: {
-    PRE_ALERT: 20000, // 20 seconds
-    ROCKET_FIRE: 20000, // 20 seconds
-    EVENT_ENDED: 2000, // 20 seconds
-    UAV_INTRUSION: 20000, // 20 seconds
-    INFILTRATION: 20000, // 20 seconds
-    UNKNOWN: 20000 // 20 seconds
+    PRE_ALERT: 600000, // 10 minutes
+    ROCKET_FIRE: 600000, // 10 minutes
+    EVENT_ENDED: 600000, // 10 minutes
+    UAV_INTRUSION: 600000, // 10 minutes
+    INFILTRATION: 600000, // 10 minutes
+    UNKNOWN: 600000 // 10 minutes
   }
 };

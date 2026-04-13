@@ -1,95 +1,62 @@
-//using AlertHub.Api.Models;
-//using AlertHub.Api.Options;
-//using AlertHub.Api.Services;
-//using Microsoft.Extensions.Options;
-//using Moq;
-//using StackExchange.Redis;
+using AlertHub.Api.Models;
+using AlertHub.Api.Options;
+using AlertHub.Api.Services;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Moq;
 
-//namespace AlertHub.Tests.Services;
+namespace AlertHub.Tests.Services;
 
-//public class AlertCacheTests
-//{
-//    private readonly Mock<IConnectionMultiplexer> _connectionMock;
-//    private readonly Mock<IDatabase> _dbMock;
-//    private readonly AlertCache _sut;
+public class AlertCacheTests
+{
+    private readonly MemoryCache _memoryCache;
+    private readonly CacheOptions _options;
+    private readonly AlertCache _sut;
 
-//    public AlertCacheTests()
-//    {
-//        var options = Options.Create(new RedisOptions());
+    public AlertCacheTests()
+    {
+        _memoryCache = new MemoryCache(new MemoryCacheOptions());
+        _options = new CacheOptions { AlertExpiry = TimeSpan.FromMinutes(5) };
 
-//        _connectionMock = new Mock<IConnectionMultiplexer>();
-//        _dbMock = new Mock<IDatabase>();
+        _sut = new AlertCache(_memoryCache, Options.Create(_options), NullLogger<AlertCache>.Instance);
+    }
 
-//        _connectionMock.Setup(c => c.GetDatabase(It.IsAny<int>(), It.IsAny<object>())).Returns(_dbMock.Object);
+    [Fact]
+    public void TryAdd_ReturnsTrue_WhenAlertIsNew()
+    {
+        var alert = new AlertMessageDto { Id = "alert-1", Timestamp = 1000 };
+        var result = _sut.TryAdd(alert);
 
-//        _sut = new AlertCache(_connectionMock.Object, options);
-//    }
+        Assert.True(result);
+        Assert.Equal(1000, alert.Timestamp);
+        Assert.True(_memoryCache.TryGetValue("alert-1", out _));
+    }
 
-//[Fact]
-//public async Task TryAddAsync_ReturnsTrue_WhenAlertIsNew()
-//{
-//    // Arrange
-//    var alert = "1" ;
-//    var cacheKey = "recent_alerts";
-//    _dbMock.Setup(db => db.StringSetAsync(
-//            It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
-//            It.Is<RedisValue>(v => v.ToString() == alert),
-//            It.IsAny<TimeSpan>(),
-//            When.NotExists))
-//        .ReturnsAsync(true);
+    [Fact]
+    public void TryAdd_ReturnsFalse_WhenAlertAlreadyExists()
+    {
+        var alert = new AlertMessageDto { Id = "alert-1", Timestamp = 1000 };
+        _sut.TryAdd(alert);
 
-//    // Act
-//    var result = await _sut.TryAddAsync(cacheKey);
+        var result = _sut.TryAdd(alert);
 
-//    // Assert
-//    Assert.True(result);
-//    _dbMock.Verify(db => db.StringSetAsync(
-//            It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
-//            It.Is<RedisValue>(v => v.ToString() == alert),
-//            It.IsAny<TimeSpan>(),
-//            When.NotExists), Times.Once);
-//}
+        Assert.False(result);
+    }
 
-//[Fact]
-//public async Task TryAddAsync_ReturnsFalse_WhenAlertAlreadyExists()
-//{
-//    // Arrange
-//    var alert = "1";
-//    var cacheKey = "recent_alerts";
-//    _dbMock.Setup(db => db.StringSetAsync(
-//            It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
-//            It.Is<RedisValue>(v => v.ToString() == alert),
-//            It.IsAny<TimeSpan>(),
-//            When.NotExists))
-//        .ReturnsAsync(false);
+    [Fact]
+    public void GetAll_ReturnsActiveAlerts()
+    {
+        var alert1 = new AlertMessageDto { Id = "alert-1" };
+        var alert2 = new AlertMessageDto { Id = "alert-2" };
 
-//    // Act
-//    var result = await _sut.TryAddAsync(cacheKey);
+        _sut.TryAdd(alert1);
+        _sut.TryAdd(alert2);
 
-//    // Assert
-//    Assert.False(result);
-//    _dbMock.Verify(db => db.StringSetAsync(
-//            It.Is<RedisKey>(k => k.ToString() == $"alert:{cacheKey}"),
-//            It.Is<RedisValue>(v => v.ToString() == alert),
-//            It.IsAny<TimeSpan>(),
-//            When.NotExists), Times.Once);
-//}
+        var results = _sut.GetAll();
 
-//    //[Fact]
-//    //public async Task TryAddRange_ShouldProcessAllItems()
-//    //{
-//    //    // Arrange
-//    //    var alerts = new List<string> { "alert1", "alert2" };
-//    //    var cacheKey = "recent_alerts";
-//    //    _dbMock.Setup(db => db.SetAddAsync(cacheKey, It.IsAny<RedisValue>(), CommandFlags.None))
-//    //        .ReturnsAsync(true);
-
-//    //    // Act
-//    //    await _sut.TryAddRange(alerts);
-
-//    //    // Assert
-//    //    _dbMock.Verify(db => db.SetAddAsync(cacheKey, "alert1", CommandFlags.None), Times.Once);
-//    //    _dbMock.Verify(db => db.SetAddAsync(cacheKey, "alert2", CommandFlags.None), Times.Once);
-//    //    _dbMock.Verify(db => db.KeyExpireAsync(cacheKey, TimeSpan.FromSeconds(30), ExpireWhen.Always, CommandFlags.None), Times.Exactly(2));
-//    //}
-//}
+        Assert.Equal(2, results.Length);
+        Assert.Contains(results, a => a.Id == "alert-1");
+        Assert.Contains(results, a => a.Id == "alert-2");
+    }
+}

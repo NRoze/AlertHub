@@ -8,7 +8,7 @@ export function mapAlertsToActiveAlerts(alerts: Alert[]): ActiveAlertLocation[] 
       name: location.name,
       location,
       type: alert.type,
-      recievedAt: alert.receivedAt, // note spelling mismatch in your type
+      receivedAt: alert.receivedAt,
       expiresAt: alert.expiresAt,
       message: alert.title,
     }))

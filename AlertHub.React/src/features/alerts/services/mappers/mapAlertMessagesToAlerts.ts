@@ -6,8 +6,8 @@ import { mapTitleToAlertType } from "./mapTitleToAlertType";
 
 export function mapAlertMessagesToAlerts(dtos: AlertMessage[]): Alert[] {
     return dtos.map(dto => {
-        const now = Date.now();
-        const receivedAtDate = dto.timestamp > 0 ? new Date(dto.timestamp) : new Date(now);
+        const receivedAt = dto.timestamp > 0 ? dto.timestamp : Date.now();
+        const expiresAt = dto.expireAt > 0 ? dto.expireAt : receivedAt + config.alertsTtlMs;
 
         return {
             id: dto.id,
@@ -15,8 +15,8 @@ export function mapAlertMessagesToAlerts(dtos: AlertMessage[]): Alert[] {
             title: dto.title,
             description: dto.desc,
             locations: mapLocations(dto.data),
-            receivedAt: receivedAtDate, 
-            expiresAt: new Date(now + config.alertsTtlMs)
+            receivedAt: new Date(receivedAt), 
+            expiresAt: new Date(expiresAt)
         } as Alert;
     });
 }

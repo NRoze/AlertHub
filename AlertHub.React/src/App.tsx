@@ -1,7 +1,6 @@
 import { config } from "./config/config";
-import { AlertsView } from "./features/alerts/components/AlertsView";
-import { useAlertsSignalR } from "./features/alerts/hooks/useAlertsSignalR";
-import { SettingsProvider } from "./features/settings/context/SettingsContext";
+import { AlertsView, useAlertsSignalR } from "./features/alerts";
+import { SettingsProvider } from "./features/settings";
 import "./App.css";
 
 const statusIcons = {

@@ -4,6 +4,6 @@ export type MonitoredLocation  = {
     id: string;
     name: string;
     type: AlertType;
-    recievedAt: Date;
+    receivedAt: Date;
     message: string;
 }

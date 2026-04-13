@@ -16,10 +16,14 @@ export const useMonitoredSync = (alerts: ActiveAlertLocation[]) => {
   }, [alerts]);
 
   const mergedLocations = useMemo(() => {
+    const now = new Date();
+
     return settings.monitoredLocations.map(city => {
       const active = activeLookup[city.name];
       
-      if (!active) {
+      const isExpired = !active || active.expiresAt <= now;
+
+      if (isExpired) {
         return { 
           ...city, 
           type: AlertType.NO_ALERTS, 
@@ -32,6 +36,7 @@ export const useMonitoredSync = (alerts: ActiveAlertLocation[]) => {
         ...city,
         type: active.type,
         message: active.message,
+        receivedAt: active.receivedAt,
         isLive: true
       };
     });

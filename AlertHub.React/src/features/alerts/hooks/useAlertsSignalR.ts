@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useReducer, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { alertsReducer, initialAlertsState } from "../store/alertsReducer";
-import type { AlertLocationDto } from "../model/AlertLocationDto";
 import type { AlertMessage } from "../model/AlertMessage";
 import { mapAlertMessagesToAlerts } from "../services/mappers/mapAlertMessagesToAlerts";
 import type { Alert } from "../model/Alert";
 
-const CLEAN_INTERVAL_MS = 5_000;
+const CONNECTION_TIMEOUT_MS = 60_000;
+const KEEPALIVE_INTERVAL_MS = 7_500;
+const CLEAN_INTERVAL_MS = 60_000;
 const RETRY_INTERVAL_MS = 5_000;
-const getAlertsEndpoint = "alerts";
+const ALERTS_ENDPOINT = "alerts";
 
 export type ConnectionStatus = "Connecting" | "Connected" | "Reconnecting" | "Disconnected";
 
@@ -22,15 +23,15 @@ export function useAlertsSignalR(baseUrl: string) {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(baseUrl)
       .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: (_) => {
+        nextRetryDelayInMilliseconds: () => {
           return RETRY_INTERVAL_MS; 
         },
       })
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    connection.serverTimeoutInMilliseconds = 60000; 
-    connection.keepAliveIntervalInMilliseconds = 7500;
+    connection.serverTimeoutInMilliseconds = CONNECTION_TIMEOUT_MS; 
+    connection.keepAliveIntervalInMilliseconds = KEEPALIVE_INTERVAL_MS;
     connection.on("ping", () => {
         console.debug("Heartbeat received"); 
     });
@@ -41,7 +42,7 @@ export function useAlertsSignalR(baseUrl: string) {
       console.warn("[SignalR] Connection lost. Reconnecting...", error);
     });
 
-    connection.onreconnected((_) => {
+    connection.onreconnected(() => {
         console.log("[SignalR] Back Online!");
         if (isMounted) setConnectionStatus("Connected"); 
     });
@@ -54,9 +55,7 @@ export function useAlertsSignalR(baseUrl: string) {
     const handleNewAlert = (raw: any) => {
       if (!isMounted) return;
       try {
-        // const rawList: AlertLocationDto[] = Array.isArray(raw) ? raw : [raw];
         const rawList: AlertMessage[] = Array.isArray(raw) ? raw : [raw];
-        // const alertLocations = mapLocationsToActiveAlerts(rawList);
         const alerts: Alert[] = mapAlertMessagesToAlerts(rawList);
         
          dispatch({ type: "ADD_ALERTS", payload: alerts });
@@ -66,7 +65,7 @@ export function useAlertsSignalR(baseUrl: string) {
     };
 
     connection.on("newAlert", handleNewAlert);
-
+    
     const cleanupInterval = setInterval(() => {
       dispatch({ type: "CLEAN_EXPIRED", now: Date.now() });
     }, CLEAN_INTERVAL_MS);
@@ -91,15 +90,15 @@ export function useAlertsSignalR(baseUrl: string) {
 
     const fetchInitialAlerts = async () => {
       try {
-        const response = await fetch(baseUrl + '/' + getAlertsEndpoint);
+        const response = await fetch(baseUrl + '/' + ALERTS_ENDPOINT);
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
-        const data: AlertLocationDto[] = await response.json();
+        const data: AlertMessage[] = await response.json();
         
         if (isMounted && data.length > 0) {
           console.log(`[useAlertsSignalR] Fetched ${data.length} initial alerts`);
-          handleNewAlert(data);
+          handleNewAlert(data.sort((a, b)=> a.timestamp - b.timestamp));
         }
       } catch (err) {
         console.error("[useAlertsSignalR] Failed to fetch initial alerts:", err);

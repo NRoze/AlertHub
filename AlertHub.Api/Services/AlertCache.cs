@@ -29,6 +29,8 @@ internal sealed class AlertCache : IAlertCache
     {
         if (_cache.TryGetValue(alert.Id, out _)) return false;
 
+        alert.Timestamp = alert.Timestamp > 0 ? alert.Timestamp : DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        alert.ExpireAt = alert.Timestamp + (long)_options.AlertExpiry.TotalMilliseconds;
         _cache.Set(alert.Id, alert, _cacheEntryOptions);
         _activeKeys.TryAdd(alert.Id, 0);
 

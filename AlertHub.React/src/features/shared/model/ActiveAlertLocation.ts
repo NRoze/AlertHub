@@ -6,7 +6,7 @@ export type ActiveAlertLocation = {
     name: string;
     location: Location;
     type: AlertType;
-    recievedAt: Date;
+    receivedAt: Date;
     expiresAt: Date;
     message: string;
 }

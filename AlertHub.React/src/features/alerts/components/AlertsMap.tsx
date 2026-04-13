@@ -5,7 +5,7 @@ import { createAlertIcon } from "../utils/createAlertIcon";
 import { alertTypeIconMap } from "../services/constants/alertTypeIconMap";
 import "./styles/AlertsMap.css";
 import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
-import { MonitorToggle } from "../../settings/components/MonitorToggle";
+import { MonitorToggle } from "../../settings";
 
 // Israel geographic center + sensible zoom
 const ISRAEL_CENTER: [number, number] = [31.5, 34.9];
@@ -16,6 +16,9 @@ type Props = {
 };
 
 export const AlertsMap: React.FC<Props> = ({ alerts }) => {
+  const now = new Date();
+  const activeAlerts = alerts.filter((alert) => alert.expiresAt > now);
+
   return (
     <MapContainer
       center={ISRAEL_CENTER}
@@ -28,7 +31,7 @@ export const AlertsMap: React.FC<Props> = ({ alerts }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
-      {alerts.map((alert) => (
+      {activeAlerts.map((alert) => (
         <AlertMarker key={alert.name} alert={alert} />
       ))}
     </MapContainer>
@@ -52,7 +55,7 @@ const AlertMarker: React.FC<{ alert: ActiveAlertLocation }> = ({ alert }) => {
         </div>
         <div className="alert-popup__message">{alert.message}</div>
         <div className="alert-popup__since">
-          Since {alert.recievedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+          Since {alert.receivedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
         </div>
       </Popup>
     </Marker>

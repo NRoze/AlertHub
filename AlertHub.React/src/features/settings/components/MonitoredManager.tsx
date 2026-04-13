@@ -25,7 +25,7 @@ export const MonitoredManager: React.FC<{ alerts: ActiveAlertLocation[] }> = ({ 
     updateSettings({
       monitoredLocations: [
         ...settings.monitoredLocations, 
-        { id: loc.name, name: loc.name, message: '', recievedAt: new Date(), type: AlertType.NO_ALERTS } 
+        { id: loc.name, name: loc.name, message: '', receivedAt: new Date(), type: AlertType.NO_ALERTS } 
       ]
     });
   }
@@ -65,7 +65,7 @@ export const MonitoredManager: React.FC<{ alerts: ActiveAlertLocation[] }> = ({ 
                 <div className="sidebar-monitor__item-message">
                   <span className="sidebar-monitor__item-message">{alertTypeMessageMap[loc.type]}</span>
                   <span className="sidebar-monitor__item-date">
-                    {loc.recievedAt.toLocaleTimeString(
+                    {loc.receivedAt.toLocaleTimeString(
                       [], { hour: '2-digit', minute: '2-digit', hour12: false })}
                   </span>
                 </div>
