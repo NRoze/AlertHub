@@ -25,7 +25,7 @@ function App() {
       </header>
       <main className="app-main">
         <SettingsProvider>
-          <div className="app">
+          <div className="app-view">
             <AlertsView alerts={alerts} activeLocations={activeLocations} connectionStatus={connectionStatus}/>
           </div>
         </SettingsProvider>

@@ -2,10 +2,8 @@ import React, { useMemo } from "react";
 import "./styles/AlertsView.css";
 import { AlertsMap } from "./AlertsMap";
 import { alertTypeIconMap, alertTypeMessageMap } from "../services/constants/alertTypeIconMap";
-import { MonitorToggle } from "../../settings/components/MonitorToggle";
 import { MonitoredManager } from "../../settings/components/MonitoredManager";
 import type { Alert } from "../model/Alert";
-import { mapAlertsToActiveAlerts } from "../services/mappers/mapAlertsToActiveAlerts";
 import type { ActiveAlertLocation } from "../../shared/model/ActiveAlertLocation";
 
 interface AlertsViewProps {
@@ -26,7 +24,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ alerts, activeLocations}
   return (
     <div className="alerts-view">
       <div className="alerts-view__settings">
-            <MonitoredManager alerts={activeLocations}  />
+        <MonitoredManager alerts={activeLocations}  />
       </div>
       <div className="alerts-view__map">
         <AlertsMap alerts={activeLocations} />
@@ -50,15 +48,15 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ alerts, activeLocations}
                 <div className="sidebar__item-location">
                   <span className="sidebar__item-emoji">{alertTypeIconMap[alert.type]}</span>
                   <span className="sidebar__item-message">{alertTypeMessageMap[alert.type]}</span>
-                  <div className="sidebar__item-recieved">{alert.receivedAt.toLocaleTimeString()}</div>
-                  {/* <MonitorToggle activeAlert={{...alert}}/> */}
+                  <div className="sidebar__item-recieved">{alert.receivedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</div>
                 </div>
-                <div className="sidebar__item-recieved">
-                  {alert.locations.map((loc) => (
+                <div className="sidebar__item-locations">
+                  {alert.locations.map((loc, i) => (
                     <span key={`${alert.id}-${loc.name}`}>
-                      {loc.name},{" "}
+                      {loc.name}
+                      {i < alert.locations.length - 1 ? ", " : ""}
                     </span>
-                    ))}
+                  ))}
                 </div>
               </li>
             ))}

@@ -11,16 +11,16 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
   searchTerm, setSearchTerm, suggestions, onSelect 
 }) => {
   return (
-    <div className="sidebar__search-container">
+    <div className="sidebar-monitor__search-container">
       <input
         type="text"
-        className="sidebar__search-input"
+        className="sidebar-monitor__search-input"
         placeholder="Search city..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
       {suggestions.length > 0 && (
-        <ul className="sidebar__suggestions">
+        <ul className="sidebar-monitor__suggestions">
           {suggestions.map(loc => (
             <li key={loc.id} onClick={() => onSelect(loc)}>
               <span>{loc.name}</span>

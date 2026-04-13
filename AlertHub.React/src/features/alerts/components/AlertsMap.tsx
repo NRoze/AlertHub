@@ -52,7 +52,7 @@ const AlertMarker: React.FC<{ alert: ActiveAlertLocation }> = ({ alert }) => {
         </div>
         <div className="alert-popup__message">{alert.message}</div>
         <div className="alert-popup__since">
-          Since {alert.recievedAt.toLocaleTimeString()}
+          Since {alert.recievedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
         </div>
       </Popup>
     </Marker>

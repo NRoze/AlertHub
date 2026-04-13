@@ -50,16 +50,24 @@ export const MonitoredManager: React.FC<{ alerts: ActiveAlertLocation[] }> = ({ 
         {mergedLocations.length === 0 ? (
           <div className="sidebar__empty"><span className="sidebar__empty-icon">👁️‍🗨️</span></div>
         ) : (
-          <ul className="sidebar__list-clean">
+          <ul className="sidebar-monitor__list-clean">
             {mergedLocations.map((loc) => (
-              <li key={loc.id} className={`sidebar__item sidebar__item--stretch ${loc.isLive ? 'sidebar__item--active' : ''}`}>
-                <div className="sidebar__item-location">
-                  <span className="sidebar__item-location-emoji">{alertTypeIconMap[loc.type] || '🔔'}</span>
-                  <span className="sidebar__item-location-text">{loc.name}</span>
+              <li key={loc.id} 
+                  className={`sidebar-monitor__item sidebar-monitor__item--stretch 
+                  ${loc.isLive ? 'sidebar__item--active' : ''}`}>
+                <div className="sidebar-monitor__item-location">
+                  <span className="sidebar__item-location-emoji">
+                    {alertTypeIconMap[loc.type] || '🔔'}
+                  </span>
+                  <span className="sidebar-monitor__item-location-text">{loc.name}</span>
                   <MonitorToggle activeAlert={loc} />
                 </div>
-                <div className="sidebar__item-recieved">
-                  {alertTypeMessageMap[loc.type]}
+                <div className="sidebar-monitor__item-message">
+                  <span className="sidebar-monitor__item-message">{alertTypeMessageMap[loc.type]}</span>
+                  <span className="sidebar-monitor__item-date">
+                    {loc.recievedAt.toLocaleTimeString(
+                      [], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                  </span>
                 </div>
               </li>
             ))}

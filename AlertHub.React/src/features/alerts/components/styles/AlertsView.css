@@ -21,6 +21,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
 }
 
 .sidebar__title {
@@ -107,6 +108,7 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--text-h);
+  padding: 2px 0px;
 }
 
 .sidebar__item-area {
@@ -122,6 +124,7 @@
 }
 
 .sidebar__item-message {
+  color: var(--text-h);
   font-size: 12px;
   line-height: 1;
   padding: 0px 2px;
@@ -132,7 +135,14 @@
   font-size: 11px;
   color: var(--text);
   padding: 0px 4px;
-  opacity: 0.6;
+  line-height: 1.5;
+}
+
+.sidebar__item-locations {
+  font-size: 11px;
+  color: var(--text);
+  padding: 0px 22px 0px 4px;
+  line-height: 1.5;
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────────────── */
@@ -152,11 +162,5 @@
     padding: 2px;
   }
 
-  /* .alerts-view__sidebar {
-    width: 100%;
-    flex: 0 0 auto;
-    max-height: 45svh;
-    border-left: none;
-    border-top: 1px solid var(--border);
-  } */
+  
 }
