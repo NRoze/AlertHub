@@ -9,6 +9,15 @@ export const alertTypeIconMap: Record<AlertType, string> = {
   [AlertType.EVENT_ENDED]: "✅",
   [AlertType.UNKNOWN]: "❓",
 };
+export const alertTypeMessageMap: Record<AlertType, string> = {
+  [AlertType.NO_ALERTS]: "אין התרעות",
+  [AlertType.ROCKET_FIRE]: "ירי טילים",
+  [AlertType.UAV_INTRUSION]: "חדירת כלי טיס עוין",
+  [AlertType.INFILTRATION]: "חדירת מחבלים",
+  [AlertType.PRE_ALERT]: "התראה מקדימה",
+  [AlertType.EVENT_ENDED]: "האירוע הסתיים",
+  [AlertType.UNKNOWN]: "אין מידע",
+};
 
 
 export const alertTypeLineColorMap: Record<AlertType, string> = {

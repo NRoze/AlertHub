@@ -10,14 +10,14 @@ export const useMonitoredSync = (alerts: ActiveAlertLocation[]) => {
   const activeLookup = useMemo(() => {
     const map: Record<string, ActiveAlertLocation> = {};
     alerts.forEach(a => {
-      map[a.id] = a;
+      map[a.name] = a;
     });
     return map;
   }, [alerts]);
 
   const mergedLocations = useMemo(() => {
     return settings.monitoredLocations.map(city => {
-      const active = activeLookup[city.id];
+      const active = activeLookup[city.name];
       
       if (!active) {
         return { 

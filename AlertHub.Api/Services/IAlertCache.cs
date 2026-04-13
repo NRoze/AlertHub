@@ -5,9 +5,9 @@ namespace AlertHub.Api.Services;
 
 public interface IAlertCache
 {
-    bool TryAdd(AlertLocationDto alert);
+    bool TryAdd(AlertMessageDto alert);
 
-    void TryAddRange(ImmutableArray<AlertLocationDto> alerts);
+    //void TryAddRange(ImmutableArray<AlertLocationDto> alerts);
 
-    ImmutableArray<AlertLocationDto> GetAll();
+    ImmutableArray<AlertMessageDto> GetAll();
 }

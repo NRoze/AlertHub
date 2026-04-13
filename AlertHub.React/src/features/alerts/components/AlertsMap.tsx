@@ -9,7 +9,7 @@ import { MonitorToggle } from "../../settings/components/MonitorToggle";
 
 // Israel geographic center + sensible zoom
 const ISRAEL_CENTER: [number, number] = [31.5, 34.9];
-const DEFAULT_ZOOM = 8;
+const DEFAULT_ZOOM = 7;
 
 type Props = {
   alerts: ActiveAlertLocation[];
@@ -29,7 +29,7 @@ export const AlertsMap: React.FC<Props> = ({ alerts }) => {
       />
 
       {alerts.map((alert) => (
-        <AlertMarker key={alert.id} alert={alert} />
+        <AlertMarker key={alert.name} alert={alert} />
       ))}
     </MapContainer>
   );

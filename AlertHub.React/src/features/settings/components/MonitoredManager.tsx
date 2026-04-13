@@ -3,7 +3,7 @@ import { useMonitoredSync } from '../hooks/useMonitoredSync';
 import { LocationSearch } from './LocationSearch';
 import { MonitorToggle } from './MonitorToggle';
 import { allIsraelLocations } from '../../shared/utils/locationUtils'; // Moved flattening here
-import { alertTypeIconMap } from '../../alerts/services/constants/alertTypeIconMap';
+import { alertTypeIconMap, alertTypeMessageMap } from '../../alerts/services/constants/alertTypeIconMap';
 import { AlertType } from '../../shared/model/AlertType';
 import type { ActiveAlertLocation } from '../../shared/model/ActiveAlertLocation';
 import "./styles/MonitoredLocationsManager.css";
@@ -16,16 +16,16 @@ export const MonitoredManager: React.FC<{ alerts: ActiveAlertLocation[] }> = ({ 
   const suggestions = useMemo(() => {
     if (searchTerm.length < 2) return [];
     return allIsraelLocations
-      .filter(loc => loc.id.includes(searchTerm))
+      .filter(loc => loc.name.includes(searchTerm))
       .slice(0, 6);
   }, [searchTerm]);
 
   const handleAddLocation = (loc: Location) => {
-  if (!settings.monitoredLocations.some(m => m.id === loc.name)) {
+  if (!settings.monitoredLocations.some(m => m.name === loc.name)) {
     updateSettings({
       monitoredLocations: [
         ...settings.monitoredLocations, 
-        { id: loc.name, message: '', recievedAt: new Date(), type: AlertType.NO_ALERTS } 
+        { id: loc.name, name: loc.name, message: '', recievedAt: new Date(), type: AlertType.NO_ALERTS } 
       ]
     });
   }
@@ -54,12 +54,12 @@ export const MonitoredManager: React.FC<{ alerts: ActiveAlertLocation[] }> = ({ 
             {mergedLocations.map((loc) => (
               <li key={loc.id} className={`sidebar__item sidebar__item--stretch ${loc.isLive ? 'sidebar__item--active' : ''}`}>
                 <div className="sidebar__item-location">
-                  <span className="alert-popup__emoji">{alertTypeIconMap[loc.type] || '🔔'}</span>
-                  <span className="sidebar__item-location-text">{loc.id}</span>
+                  <span className="sidebar__item-location-emoji">{alertTypeIconMap[loc.type] || '🔔'}</span>
+                  <span className="sidebar__item-location-text">{loc.name}</span>
                   <MonitorToggle activeAlert={loc} />
                 </div>
                 <div className="sidebar__item-recieved">
-                  {loc.message}
+                  {alertTypeMessageMap[loc.type]}
                 </div>
               </li>
             ))}

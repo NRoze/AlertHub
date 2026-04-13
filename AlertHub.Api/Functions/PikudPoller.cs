@@ -45,15 +45,15 @@ internal sealed class PikudPoller
             }
 
             if (logger.IsEnabled(LogLevel.Information))
-                logger.LogPayload([alert]);
+                logger.LogPayload(alert);
 
-            var dtos = MapAlertLocations(alert) ?? [];
-            
-            _alertCache.TryAddRange(dtos);
+            var dto = JsonSerializer.Deserialize<AlertMessageDto>(alert);
+
+            _alertCache.TryAdd(dto!);
 
             return new SignalRMessageAction("newAlert")
             {
-                Arguments = [dtos]
+                Arguments = [dto!]
             };
         }
         catch (Exception ex)
@@ -62,6 +62,7 @@ internal sealed class PikudPoller
             throw;
         }
     }
+
     private ImmutableArray<AlertLocationDto>? MapAlertLocations(string alert)
     {
         var dto = JsonSerializer.Deserialize<AlertMessageDto>(alert);

@@ -25,7 +25,7 @@ internal sealed class AlertCache : IAlertCache
             .RegisterPostEvictionCallback(OnEvicted);
     }
 
-    public bool TryAdd(AlertLocationDto alert)
+    public bool TryAdd(AlertMessageDto alert)
     {
         if (_cache.TryGetValue(alert.Id, out _)) return false;
 
@@ -35,13 +35,13 @@ internal sealed class AlertCache : IAlertCache
         return true;
     }
 
-    public ImmutableArray<AlertLocationDto> GetAll()
+    public ImmutableArray<AlertMessageDto> GetAll()
     {
-        var alerts = new List<AlertLocationDto>();
+        var alerts = new List<AlertMessageDto>();
 
         foreach (var key in _activeKeys.Keys)
         {
-            if (_cache.TryGetValue(key, out AlertLocationDto? alert) && alert is not null)
+            if (_cache.TryGetValue(key, out AlertMessageDto? alert) && alert is not null)
             {
                 alerts.Add(alert);
             }
@@ -61,11 +61,11 @@ internal sealed class AlertCache : IAlertCache
         }
     }
 
-    public void TryAddRange(ImmutableArray<AlertLocationDto> alerts)
-    {
-        foreach (var alert in alerts)
-        {
-            if (alert is not null) TryAdd(alert);
-        }
-    }
+    //public void TryAddRange(ImmutableArray<AlertMessageDto> alerts)
+    //{
+    //    foreach (var alert in alerts)
+    //    {
+    //        if (alert is not null) TryAdd(alert);
+    //    }
+    //}
 }

@@ -16,7 +16,7 @@ internal sealed class AlertsFunction
     }
 
     [Function("alerts")]
-    public async Task<ImmutableArray<AlertLocationDto>> Alerts(
+    public async Task<ImmutableArray<AlertMessageDto>> Alerts(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
         return _cache.GetAll(); ;

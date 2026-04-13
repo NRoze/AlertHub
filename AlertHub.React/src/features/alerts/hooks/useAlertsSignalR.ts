@@ -2,7 +2,9 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { alertsReducer, initialAlertsState } from "../store/alertsReducer";
 import type { AlertLocationDto } from "../model/AlertLocationDto";
-import { mapLocationsToActiveAlerts } from "../services/mappers/mapLocationsToActiveAlerts";
+import type { AlertMessage } from "../model/AlertMessage";
+import { mapAlertMessagesToAlerts } from "../services/mappers/mapAlertMessagesToAlerts";
+import type { Alert } from "../model/Alert";
 
 const CLEAN_INTERVAL_MS = 5_000;
 const RETRY_INTERVAL_MS = 5_000;
@@ -52,10 +54,12 @@ export function useAlertsSignalR(baseUrl: string) {
     const handleNewAlert = (raw: any) => {
       if (!isMounted) return;
       try {
-        const rawList: AlertLocationDto[] = Array.isArray(raw) ? raw : [raw];
-        const alertLocations = mapLocationsToActiveAlerts(rawList);
+        // const rawList: AlertLocationDto[] = Array.isArray(raw) ? raw : [raw];
+        const rawList: AlertMessage[] = Array.isArray(raw) ? raw : [raw];
+        // const alertLocations = mapLocationsToActiveAlerts(rawList);
+        const alerts: Alert[] = mapAlertMessagesToAlerts(rawList);
         
-        dispatch({ type: "ADD_ALERTS", payload: alertLocations });
+         dispatch({ type: "ADD_ALERTS", payload: alerts });
       } catch (err) {
         console.error("[useAlertsSignalR] Parsing error:", err);
       }
@@ -113,8 +117,9 @@ export function useAlertsSignalR(baseUrl: string) {
   }, [baseUrl]);
 
   const alerts = useMemo(() => Array.from(state.alerts.values()), [state.alerts]);
+  const activeLocations = useMemo(() => Array.from(state.activeLocations.values()), [state.activeLocations]);
 
-  return { alerts, connectionStatus };
+  return { alerts, activeLocations, connectionStatus };
 }
 
 

@@ -23,14 +23,14 @@ Following [Semantic Versioning](https://semver.org/).
 ---
 
 ## [v0.2.0] – 2026-04-04
-***Infrastructure**
+**Infrastructure**
 - Added Health Check endpoint to WebApi
 - Added Health Function to Azure Function App
 
 ---
 
 ## [v0.3.0] – 2026-04-06
-***Features**
+**Features**
 - Added a react-leaflet map to the frontend
 - Alerts shown for a congurable expiry time on the map
 - Including GitHub workflow for React depoly
@@ -38,7 +38,7 @@ Following [Semantic Versioning](https://semver.org/).
 ---
 
 ## [v0.5.0] – 2026-04-06
-***Features**
+**Features**
 - Conditional deployment by repo change since last release tag
 - Work around free tier SSE implementation by keepalives
 - Fixed azure and asp.net conflicts
@@ -46,7 +46,7 @@ Following [Semantic Versioning](https://semver.org/).
 ---
 
 ## [v0.6.0] – 2026-04-08
-***Architecture Change**
+**Architecture Change**
 - Deprecating Redis due to high cost
 - Deprecating WebApi for simplicity
 - Azure function will use signalR to push updates to the frontend
@@ -54,7 +54,7 @@ Following [Semantic Versioning](https://semver.org/).
 ---
 
 ## [v0.7.0] – 2026-04-08
-***Architecture Change**
+**Architecture Change**
 - Function app will use Azure SignalR Service to push updates to the frontend
 - Raw messages mapped to location DTO and managed in cache
 - Client recieves list of locations and map to active alerts
@@ -63,7 +63,7 @@ Following [Semantic Versioning](https://semver.org/).
 ---
 
 ## [v0.8.0] – 2026-04-09
-***Features**
+**Features**
 - Monitoring locations, saved in local storage
 - List of monitored locations + auto complete search
 - Toggle button for monitoring
@@ -71,9 +71,17 @@ Following [Semantic Versioning](https://semver.org/).
 ---
 
 ## [v0.9.0] – 2026-04-09
-***Features**
+**Features**
 - Connection status, display Live/Connecting/Reconnecting/Offline
 - Conditional CI 
+
+---
+
+## [v0.11.0] – 2026-04-09
+**Architecture Change**
+- Backend now caches original alert objects
+- Frontend displays original alerts on right side bar
+- Frontend displays location objects on left side bar
 
 ---
 

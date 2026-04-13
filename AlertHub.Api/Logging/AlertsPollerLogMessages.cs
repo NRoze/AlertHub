@@ -26,6 +26,6 @@ internal static partial class AlertsPollerLogMessages
         Message = "Recieved empty payload")]
     public static partial void EmptyPayload(this ILogger logger);
     [LoggerMessage(EventId = 104, Level = LogLevel.Information, 
-        Message = "Recieved payload: {Alerts}")]
-    public static partial void LogPayload(this ILogger logger, IReadOnlyList<string> alerts);
+        Message = "Recieved payload: {Alert}")]
+    public static partial void LogPayload(this ILogger logger, string alert);
 }

@@ -69,7 +69,13 @@
 }
 
 .alert-popup__emoji {
-  font-size: 18px;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0px 2px;
+}
+
+.alert-popup__message {
+  font-size: 12px;
   line-height: 1;
   padding: 0px 2px;
 }

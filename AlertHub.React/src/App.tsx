@@ -12,7 +12,7 @@ const statusIcons = {
   };
 
 function App() {
-  const { alerts, connectionStatus } = useAlertsSignalR(config.alertsApiBase);
+  const { alerts, activeLocations, connectionStatus } = useAlertsSignalR(config.alertsApiBase);
 
   return (
     <div className="app">
@@ -26,7 +26,7 @@ function App() {
       <main className="app-main">
         <SettingsProvider>
           <div className="app">
-            <AlertsView alerts={alerts} connectionStatus={connectionStatus}/>
+            <AlertsView alerts={alerts} activeLocations={activeLocations} connectionStatus={connectionStatus}/>
           </div>
         </SettingsProvider>
       </main>

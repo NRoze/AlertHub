@@ -4,4 +4,5 @@ export type AlertMessage = {
   title: string;
   data: string[];
   desc: string;
+  timestamp: number;
 };

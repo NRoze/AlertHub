@@ -9,15 +9,16 @@ interface MonitorToggleProps {
 
 export const MonitorToggle: React.FC<MonitorToggleProps> = ({ activeAlert }) => {
   const { settings, updateSettings } = useSettings();
-  const isMonitored = settings.monitoredLocations.some(loc => loc.id === activeAlert.id);
+  const isMonitored = settings.monitoredLocations.some(loc => loc.name === activeAlert.name);
 
   const toggleMonitor = (e: React.MouseEvent) => {
     e.stopPropagation();
 
     const newLocations = isMonitored
-      ? settings.monitoredLocations.filter(loc => loc.id !== activeAlert.id)
+      ? settings.monitoredLocations.filter(loc => loc.name !== activeAlert.name)
       : [...settings.monitoredLocations, {
           id: activeAlert.id,
+          name: activeAlert.name,
           type: activeAlert.type,
           recievedAt: activeAlert.recievedAt || new Date(),
           message: activeAlert.message || ''
