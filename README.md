@@ -16,7 +16,7 @@ Previously, the solution included an `AlertHub.WebApi` component acting as a mid
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [.NET 8+ SDK](https://dotnet.microsoft.com/)
+- [.NET 10+ SDK](https://dotnet.microsoft.com/)
 - [Node.js 18+](https://nodejs.org/)
 - Azure Storage Emulator / Azurite (for local Azure Functions development)
 
