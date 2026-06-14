@@ -4,6 +4,7 @@ export const titleToTypeMap = new Map<string, AlertType>([
   ["אין התרעות", AlertType.NO_ALERTS],
   ["חדירת כלי טיס עוין", AlertType.UAV_INTRUSION],
   ["ירי רקטות וטילים", AlertType.ROCKET_FIRE],
+  ["ירי רקטות וטילים - היכנסו למרחב המוגן", AlertType.ROCKET_FIRE],
   ["חדירת מחבלים", AlertType.INFILTRATION],
   ["האירוע הסתיים", AlertType.EVENT_ENDED],
   ["בדקות הקרובות צפויות להתקבל התרעות באזורך", AlertType.PRE_ALERT],
